@@ -1,0 +1,56 @@
+ip addr | grep "inet "
+passwd
+nano ~/.ssh/authorized_keys
+sudo apt update
+
+sudo apt-get install apache2
+echo "sudo apt-get install ufw"
+sudo apt-get install certbot python3-certbot-apache
+sudo apt-get install php
+sudo apt-get install postgresql postgresql-contrib
+sudo apt-get install php-pgsql
+sudo apt-get install php-xml
+sudo apt-get install screen
+sudo apt-get install git
+sudo apt-get install gh
+
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'mdp';
+CREATE USER romana WITH PASSWORD 'mdp';
+CREATE DATABASE romana OWNER romana;
+GRANT ALL PRIVILEGES ON DATABASE romana TO romana;
+CREATE SCHEMA romana OWNER romana;
+GRANT ALL PRIVILEGES ON SCHEMA romana TO romana;
+
+cd /usr/local/bin
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+mv composer.phar composer
+composer global require laravel/installer
+cd ~
+composer create-project laravel/laravel Romana
+cd Romana
+php artisan key:generate
+sudo phpenmod pgsql pdo_pgsql
+composer install
+sudo chmod 775 dev/start.sh
+nano .env
+nano config/database.php
+./ dev/setup/start.sh
+
+sudo a2enmod proxy proxy_http proxy_ajp rewrite deflate headers proxy_balancer proxy_connect proxy_html
+cd /etc/apache2/sites-available
+nano romana.robinmillet.fr.conf
+sudo a2ensite romana.robinmillet.fr.conf
+sudo certbot --apache romana.robinmillet.fr.conf
+sudo a2ensite romana.robinmillet.fr-le-ssl.conf
+sudo systemctl reload apache2
+
+cd ~/Romana
+git init
+git remote add origin https://github.com/RobinMILLET/Romana.git
+git add .
+git commit -m "Init"
+gh auth login
+git push -u origin master
