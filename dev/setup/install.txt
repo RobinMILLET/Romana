@@ -19,8 +19,6 @@ ALTER USER postgres WITH PASSWORD 'mdp';
 CREATE USER romana WITH PASSWORD 'mdp';
 CREATE DATABASE romana OWNER romana;
 GRANT ALL PRIVILEGES ON DATABASE romana TO romana;
-CREATE SCHEMA romana OWNER romana;
-GRANT ALL PRIVILEGES ON SCHEMA romana TO romana;
 
 cd /usr/local/bin
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -34,16 +32,23 @@ cd Romana
 php artisan key:generate
 sudo phpenmod pgsql pdo_pgsql
 composer install
-sudo chmod 775 dev/start.sh
+composer require laravel/breeze --dev
+php artisan breeze:install vue
+npm install
+npm run dev
+php artisan migrate
+sudo chown -R www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+sudo chmod 775 dev/setup/laravel.sh
+sudo chmod 775 dev/setup/node.sh
 nano .env
 nano config/database.php
-./ dev/setup/start.sh
+./dev/setup/laravel.sh
+./dev/setup/node.sh
 
 sudo a2enmod proxy proxy_http proxy_ajp rewrite deflate headers proxy_balancer proxy_connect proxy_html
 cd /etc/apache2/sites-available
-nano romana.robinmillet.fr.conf
-sudo a2ensite romana.robinmillet.fr.conf
-sudo certbot --apache romana.robinmillet.fr.conf
+nano romana.robinmillet.fr-le-ssl.conf
 sudo a2ensite romana.robinmillet.fr-le-ssl.conf
 sudo systemctl reload apache2
 

@@ -1,0 +1,1 @@
+screen -dmS 'RomanaLaravel:6860' bash -c "php ~/Romana/artisan serve --host=127.0.0.1 --port=6860";
