@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import Welcome from './Pages/Welcome.vue'
+import Conteneur from './Components/Conteneur.vue'
 
 const app = createApp({})
-app.component('Welcome', Welcome)
+app.component('Conteneur', Conteneur)
 app.mount('#app')
