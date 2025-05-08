@@ -200,7 +200,7 @@ CREATE TABLE traduction (
     langue_id INT NOT NULL,
     traductible_id INT NOT NULL,
     traduction_libelle VARCHAR(64) NOT NULL,
-    traduction_description VARCHAR(512) NOT NULL,
+    traduction_description VARCHAR(512) NULL,
     CONSTRAINT fk_traduction_langue
         FOREIGN KEY (langue_id)
         REFERENCES langue(langue_id)

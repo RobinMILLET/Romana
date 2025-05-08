@@ -1,9 +1,18 @@
+@php
+    use App\Http\Controllers\AppController;
+    $pages = AppController::obtenirPagesTraduites()
+@endphp
 <header class="bg-black shadow p-3 flex justify-between items-center navbar">
     <div class="flex items-center gap-4">
         <img src="{{ asset('public/images/RomanaW.png') }}" alt="Logo" class="h-10 logo">
         <h1 class="text-5xl font-bold white">Romana</h1>
     </div>
-    <nav class="space-x-4">
-        <a href="{{ route('home') }}" class="text-2xl">Accueil</a>
-    </nav>
+    <div class="bg-black shadow p-3 flex justify-between items-center navbar gap-4">
+        @foreach ($pages as $page)
+            <nav class="space-x-4">
+                <a href="{{ route('vitrine', [$page->page_id]) }}" class="text-2xl">{{ $page->page_libelle }}</a>
+            </nav>
+        @endforeach
+    </div>
+    @include('Layouts.languepick')
 </header>

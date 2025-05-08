@@ -5,7 +5,7 @@
     <title>@yield('title', 'Romana')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex flex-col min-h-screen">
+<body id="app" class="flex flex-col min-h-screen">
     @include('Layouts.navbar')
 
     <main class="flex-grow bg-grey">

@@ -1,0 +1,21 @@
+section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+  
+section > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    section {
+        display: block;
+    }
+  
+    section > * {
+        flex: 1 1 100%;
+    }
+}

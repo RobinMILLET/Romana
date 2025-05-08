@@ -22,8 +22,3 @@ header {
 .red {
     color: red;
 }
-
-Conteneur {
-    display: flex;
-    margin: 1vw;
-}
