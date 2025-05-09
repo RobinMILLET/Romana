@@ -8,7 +8,7 @@
 @foreach ($ligne as $conteneur)
 
 <Conteneur :conteneur = "{{ $conteneur }}" >
-{!! $conteneur->conteneur_contenu !!}
+{!! $conteneur->conteneur_contenu_texte !!}
 </Conteneur>
 
 @endforeach

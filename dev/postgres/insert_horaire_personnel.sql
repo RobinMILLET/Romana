@@ -92,12 +92,12 @@ INSERT INTO statut (statut_id, statut_libelle, statut_hex) VALUES
 
 INSERT INTO reservation (statut_id, personnel_id, reservation_num,
 reservation_nom, reservation_prenom, reservation_telephone, reservation_personnes,
-reservation_creation, reservation_horaire, reservation_anonymiser) VALUES
-(1, 1, '4V4LYNRP', NULL, 'Lys', '0123456789', 4, now(), now() + INTERVAL '90 minute', FALSE),
-(2, 4, '3ZZ4M4RI', 'EZZAMARI', 'Sofiane', '1234567890', 2, now(), now() + INTERVAL '30 minute', FALSE),
-(3, NULL, '53BUL0NP', 'ZEBULON', 'Moustache', '2345678901', 10, now(), now() - INTERVAL '5 minute', FALSE),
-(4, 4, '3C0N0MY1', 'YOHANN', 'Gaillard', '3456789012', 1, now(), now() - INTERVAL '15 minute', FALSE),
-(5, NULL, 'J3SUSG0D', 'JESUS', 'Chuy', '4567890123', 7, now(), now() - INTERVAL '45 minute', FALSE),
-(6, NULL, 'L0LXPTDR', 'MICHEL', 'Jean', '5678901234', 20, now(), now() - INTERVAL '60 minute', TRUE),
-(7, 1, 'R0B1NM74', 'MILLET', 'Robin', '6789012345', 1, now(), now() - INTERVAL '30 minute', FALSE),
-(8, 4, 'L0L0FL3G', 'GRAGAS', NULL, '7890123456', 5, now(), now() - INTERVAL '120 minute', FALSE);
+reservation_commentaire, reservation_creation, reservation_horaire, reservation_anonymiser) VALUES
+(1, 1, '4V4LYNRP', NULL, 'Lys', '0123456789', 4, 'Bonjour ! C''est l''anniversaire de ma tante ajourd''hui. Vous pensez pouvoir mettre une bougie sur une pizza ? Ça serait très drôle ! Merci !', now(), now() + INTERVAL '90 minute', FALSE),
+(2, 4, '3ZZ4M4RI', 'EZZAMARI', 'Sofiane', '1234567890', 2, NULL, now(), now() + INTERVAL '30 minute', FALSE),
+(3, NULL, '53BUL0NP', 'ZEBULON', 'Moustache', '2345678901', 10, NULL, now(), now() - INTERVAL '5 minute', FALSE),
+(4, 4, '3C0N0MY1', 'YOHANN', 'Gaillard', '3456789012', 1, 'De préférence en extérieur SVP.', now(), now() - INTERVAL '15 minute', FALSE),
+(5, NULL, 'J3SUSG0D', 'JESUS', 'Chuy', '4567890123', 7, NULL, now(), now() - INTERVAL '45 minute', FALSE),
+(6, NULL, 'L0LXPTDR', 'MICHEL', 'Jean', '5678901234', 20, NULL, now(), now() - INTERVAL '60 minute', TRUE),
+(7, 1, 'R0B1NM74', 'MILLET', 'Robin', '6789012345', 1, NULL, now(), now() - INTERVAL '30 minute', FALSE),
+(8, 4, 'L0L0FL3G', 'GRAGAS', NULL, '7890123456', 5, 'Une personne dans notre groupe esten fauteuil roulant', now(), now() - INTERVAL '120 minute', FALSE);

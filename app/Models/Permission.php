@@ -11,14 +11,14 @@ class Permission extends Model
     public $timestamps = false;
     public $incrementing = false;
     protected $fillable = [
-        'permission_id',
+        'typepermission_id',
         'personnel_id'
     ];
 
     public function Personnel() {
-        return $this->hasOne(Personnel::class, "personnel_id")->get()->first();
+        return $this->hasOne(Personnel::class, "personnel_id", "personnel_id")->get()->first();
     }
     public function Typepermission() {
-        return $this->hasOne(Typepermission::class, "permission_id")->get()->first();
+        return $this->hasOne(Typepermission::class, "typepermission_id", "typepermission_id")->get()->first();
     }
 }

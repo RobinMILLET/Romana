@@ -10,7 +10,7 @@
     <div class="bg-black shadow p-3 flex justify-between items-center navbar gap-4">
         @foreach ($pages as $page)
             <nav class="space-x-4">
-                <a href="{{ route('vitrine', [$page->page_id]) }}" class="text-2xl">{{ $page->page_libelle }}</a>
+                <a href="{{ route($page->page_route) }}" class="text-2xl">{{ $page->page_traduction_libelle }}</a>
             </nav>
         @endforeach
     </div>

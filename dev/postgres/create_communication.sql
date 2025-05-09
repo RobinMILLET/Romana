@@ -55,6 +55,7 @@ CREATE TABLE element (
 CREATE TABLE page (
     page_id INT PRIMARY KEY,
     page_ordre INT NOT NULL,
+    page_route VARCHAR(32) NOT NULL,
     CONSTRAINT fk_page_traductible
         FOREIGN KEY (page_id)
         REFERENCES traductible(traductible_id)
@@ -132,18 +133,31 @@ CREATE TABLE police (
     police_texte VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE photo (
+    photo_id INT PRIMARY KEY DEFAULT nextval('sq_photo'),
+    photo_libelle VARCHAR(64) NOT NULL,
+    photo_url VARCHAR(256) NOT NULL
+);
+
 CREATE TABLE conteneur (
     conteneur_id INT PRIMARY KEY DEFAULT nextval('sq_conteneur'),
     conteneur_libelle VARCHAR(64) NOT NULL,
     evenement_id INT NULL,
     page_id INT NULL,
+    photo_id INT NULL,
     police_id INT NULL,
     conteneur_texte VARCHAR(2048) NULL,
-    conteneur_centre BOOLEAN NULL,
-    conteneur_fond CHAR(6) NULL DEFAULT '000000',
-    conteneur_hex CHAR(6) NULL DEFAULT 'ffffff',
-    conteneur_ligne INT NULL,
-    conteneur_colonne INT NULL,
+    conteneur_ligne INT NOT NULL,
+    conteneur_colonne INT NOT NULL,
+    conteneur_aligne NUMERIC(1,0) NOT NULL DEFAULT 5,
+    conteneur_bordure CHAR(8) NULL,
+    conteneur_couleur CHAR(8) NOT NULL DEFAULT 'ffffffff',
+    conteneur_fond CHAR(8) NULL,
+    conteneur_largeur VARCHAR(32) NULL,
+    conteneur_marges VARCHAR(32) NULL,
+    conteneur_ombre CHAR(8) NULL,
+    conteneur_rayon VARCHAR(32) NOT NULL DEFAULT '0px',
+    conteneur_visible BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_conteneur_evenement
         FOREIGN KEY (evenement_id)
         REFERENCES evenement(evenement_id)
@@ -156,33 +170,20 @@ CREATE TABLE conteneur (
         FOREIGN KEY (police_id)
         REFERENCES police(police_id)
         ON DELETE SET NULL,
-    CONSTRAINT ck_conteneur_fond
-        CHECK (conteneur_fond ~ '^[0-9a-f]{6}$'),
-    CONSTRAINT ck_conteneur_hex
-        CHECK (conteneur_hex ~ '^[0-9a-f]{6}$')
-);
-
-/* --------------------------------
-    PHOTO
-*/ --------------------------------
-
-CREATE TABLE photo (
-    photo_id INT PRIMARY KEY DEFAULT nextval('sq_photo'),
-    photo_libelle VARCHAR(64) NOT NULL,
-    photo_url VARCHAR(256) NOT NULL
-);
-
-CREATE TABLE galerie (
-    photo_id INT NOT NULL,
-    conteneur_id INT NOT NULL,
-    CONSTRAINT fk_galerie_photo
+    CONSTRAINT fk_conteneur_photo
         FOREIGN KEY (photo_id)
         REFERENCES photo(photo_id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_galerie_conteneur
-        FOREIGN KEY (conteneur_id)
-        REFERENCES conteneur(conteneur_id)
-        ON DELETE CASCADE
+        ON DELETE SET NULL,
+    CONSTRAINT ck_conteneur_aligne
+        CHECK (conteneur_aligne BETWEEN 1 AND 9),
+    CONSTRAINT ck_conteneur_bordure
+        CHECK (conteneur_bordure ~ '^[0-9a-f]{8}$'),
+    CONSTRAINT ck_conteneur_couleur
+        CHECK (conteneur_couleur ~ '^[0-9a-f]{8}$'),
+    CONSTRAINT ck_conteneur_fond
+        CHECK (conteneur_fond ~ '^[0-9a-f]{8}$'),
+    CONSTRAINT ck_conteneur_ombre
+        CHECK (conteneur_ombre ~ '^[0-9a-f]{8}$')
 );
 
 /* --------------------------------
@@ -225,20 +226,6 @@ CREATE TABLE contenu (
         ON DELETE CASCADE
 );
 
-CREATE TABLE texte (
-    langue_id INT NOT NULL,
-    photo_id INT NOT NULL,
-    texte_description VARCHAR(512) NULL,
-    CONSTRAINT fk_texte_langue
-        FOREIGN KEY (langue_id)
-        REFERENCES langue(langue_id)
-        ON DELETE RESTRICT,
-    CONSTRAINT fk_texte_photo
-        FOREIGN KEY (photo_id)
-        REFERENCES photo(photo_id)
-        ON DELETE CASCADE
-);
-
 /* --------------------------------
     INDEX
 */ --------------------------------
@@ -249,25 +236,30 @@ CREATE UNIQUE INDEX ix_categorie_ordre ON categorie (categorie_ordre);
 CREATE INDEX ix_categorie_parent ON categorie (categorie_idparent);
 CREATE UNIQUE INDEX ix_categorise_pk ON categorise (categorie_id, element_id);
 CREATE UNIQUE INDEX ix_conteneur_id ON conteneur (conteneur_id);
+CREATE UNIQUE INDEX ix_conteneur_libelle ON conteneur (conteneur_libelle);
 CREATE INDEX ix_conteneur_evenement ON conteneur (evenement_id);
 CREATE INDEX ix_conteneur_page ON conteneur (page_id);
+CREATE INDEX ix_conteneur_photo ON conteneur (photo_id);
+CREATE INDEX ix_conteneur_police ON conteneur (police_id);
+CREATE UNIQUE INDEX ix_conteneur_position ON conteneur (conteneur_ligne, conteneur_colonne);
+CREATE INDEX ix_conteneur_visible ON conteneur (conteneur_visible);
 CREATE UNIQUE INDEX ix_contenu_pk ON contenu (conteneur_id, langue_id);
 CREATE UNIQUE INDEX ix_element_id ON element (element_id);
 CREATE UNIQUE INDEX ix_evenement_id ON evenement (evenement_id);
 CREATE UNIQUE INDEX ix_evenement_libelle ON evenement (evenement_libelle);
 CREATE UNIQUE INDEX ix_evenement_ordre ON evenement (evenement_ordre);
-CREATE UNIQUE INDEX ix_galerie_pk ON galerie (photo_id, conteneur_id);
+CREATE UNIQUE INDEX ix_evenement_visible ON evenement (evenement_visible);
 CREATE UNIQUE INDEX ix_langue_id ON langue (langue_id);
 CREATE UNIQUE INDEX ix_langue_code ON langue (langue_code);
 CREATE UNIQUE INDEX ix_langue_libelle ON langue (langue_libelle);
 CREATE UNIQUE INDEX ix_page_id ON page (page_id);
 CREATE UNIQUE INDEX ix_page_ordre ON page (page_ordre);
+CREATE UNIQUE INDEX ix_page_route ON page (page_route);
 CREATE UNIQUE INDEX ix_photo_id ON photo (photo_id);
 CREATE UNIQUE INDEX ix_photo_libelle ON photo (photo_libelle);
 CREATE UNIQUE INDEX ix_police_id ON police (police_id);
 CREATE UNIQUE INDEX ix_police_libelle ON police (police_libelle);
 CREATE UNIQUE INDEX ix_presence_pk ON presence (allergene_id, element_id);
-CREATE UNIQUE INDEX ix_texte_pk ON texte (photo_id, langue_id);
 CREATE UNIQUE INDEX ix_traductible_id ON traductible (traductible_id);
 CREATE UNIQUE INDEX ix_traduction_pk ON traduction (traductible_id, langue_id);
 CREATE UNIQUE INDEX ix_typepresence_id ON typepresence (typepresence_id);

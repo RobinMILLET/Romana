@@ -17,9 +17,9 @@ class Categorise extends Model
     ];
 
     public function Categorie() {
-        return $this->hasMany(Categorie::class, "categorie_id")->get()->first();
+        return $this->hasMany(Categorie::class, "categorie_id", "categorie_id")->get()->first();
     }
     public function Element() {
-        return $this->hasMany(Element::class, "element_id")->get()->first();
+        return $this->hasMany(Element::class, "element_id", "element_id")->get()->first();
     }
 }

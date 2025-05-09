@@ -15,7 +15,7 @@ class Allergene extends Model
     ];
 
     public function Traductible() {
-        return $this->hasOne(Traductible::class, "allergene_id")->get()->first();
+        return $this->hasOne(Traductible::class, "traductible_id", "allergene_id")->get()->first();
     }
     public function Presence(){
         return $this->hasMany(Presence::class, "allergene_id", "allergene_id")->get();

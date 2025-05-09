@@ -17,12 +17,12 @@ class Presence extends Model
     ];
 
     public function Allergene() {
-        return $this->hasOne(Allergene::class, "allergene_id")->get()->first();
+        return $this->hasOne(Allergene::class, "allergene_id", "allergene_id")->get()->first();
     }
     public function Element() {
-        return $this->hasOne(Element::class, "element_id")->get()->first();
+        return $this->hasOne(Element::class, "element_id", "element_id")->get()->first();
     }
     public function Typepresence(){
-        return $this->hasMany(Typepresence::class, "typepresence_id")->get()->first();
+        return $this->hasMany(Typepresence::class, "typepresence_id", "typepresence_id")->get()->first();
     }
 }

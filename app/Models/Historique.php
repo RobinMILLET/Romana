@@ -16,5 +16,5 @@ class Historique extends Model
     ];
 
     public function Personnel() {
-        return $this->hasOne(Personnel::class, "personnel_id")->get()->first();
+        return $this->hasOne(Personnel::class, "personnel_id", "personnel_id")->get()->first();
     }}

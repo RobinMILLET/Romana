@@ -17,7 +17,7 @@ class Categorie extends Model
     ];
 
     public function Traductible() {
-        return $this->hasOne(Traductible::class, "categorie_id")->get()->first();
+        return $this->hasOne(Traductible::class, "traductible_id", "categorie_id")->get()->first();
     }
     public function Categorise() {
         return $this->hasMany(Categorie::class, "categorie_id", "categorie_id")->get();

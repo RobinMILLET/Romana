@@ -15,7 +15,7 @@ class Typepresence extends Model
     ];
 
     public function Traductible() {
-        return $this->hasOne(Traductible::class, "typepresence_id")->get()->first();
+        return $this->hasOne(Traductible::class, "traductible_id", "typepresence_id")->get()->first();
     }
     public function Presence(){
         return $this->hasMany(Presence::class, "typepresence_id", "typepresence_id")->get();

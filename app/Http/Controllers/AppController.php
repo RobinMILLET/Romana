@@ -12,7 +12,7 @@ class AppController extends Controller
         $pages = Page::orderBy('page_ordre')->get(); // Obtenir les pages
         // Obtenir les traductions depuis Traductible->Traduction->traduction_libelle
         foreach ($pages as $page) {
-            $page->page_libelle = $page->obtenirTraduction($langue);
+            $page->page_traduction_libelle = $page->obtenirTraduction($langue);
         }
         return $pages;
     }

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use PhpOption\None;
 
 class Conteneur extends Model
 {
@@ -15,26 +14,33 @@ class Conteneur extends Model
         'conteneur_libelle',
         'evenement_id',
         'page_id',
+        'photo_id',
         'police_id',
         'conteneur_texte',
-        'conteneur_centre',
-        'conteneur_fond',
-        'conteneur_hex',
         'conteneur_ligne',
-        'conteneur_colonne'
+        'conteneur_colonne',
+        'conteneur_aligne',
+        'conteneur_bordure',
+        'conteneur_couleur',
+        'conteneur_fond',
+        'conteneur_largeur',
+        'conteneur_marges',
+        'conteneur_ombre',
+        'conteneur_rayon',
+        'conteneur_visible'
     ];
 
     public function Page() {
-        return $this->hasOne(Page::class, "page_id")->get()->first();
+        return $this->hasOne(Page::class, "page_id", "page_id")->get()->first();
     }
     public function Evenement() {
-        return $this->hasOne(Evenement::class, "evenement_id")->get()->first();
+        return $this->hasOne(Evenement::class, "evenement_id", "evenement_id")->get()->first();
     }
     public function Police() {
-        return $this->hasOne(Police::class, "police_id")->get()->first();
+        return $this->hasOne(Police::class, "police_id", "police_id")->get()->first();
     }
-    public function Galerie() {
-        return $this->hasMany(Galerie::class, "conteneur_id", "conteneur_id")->get();
+    public function Photo() {
+        return $this->hasOne(Photo::class, "photo_id", "photo_id")->get()->first();
     }
     public function Contenu() {
         return $this->hasMany(Contenu::class, "conteneur_id", "conteneur_id")->get();
@@ -42,7 +48,7 @@ class Conteneur extends Model
 
     public function obtenirContenuTraduit(int $langue_id) {
         if (!$this->conteneur_texte) return Null;
-        $contenu = $this->Contenu()->firstWhere('langue_id', '=', $langue_id);
+        $contenu = $this->Contenu()->firstWhere('langue_id', $langue_id);
         // Obtenir le contenu du texte en langue $langue_id
         if ($contenu) return $contenu->contenu_texte;
         // TODO: Appeller l'API de traduction et créer le texte ici

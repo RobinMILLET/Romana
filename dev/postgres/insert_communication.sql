@@ -75,8 +75,9 @@ INSERT INTO traductible (traductible_id) VALUES
 (default),(default),(default),(default),
 (default),(default),(default),(default);
 
-INSERT INTO page (page_id, page_ordre) VALUES
-(1, 1),(2, 2),(3, 3),(4, 4),(5, 5),(6, 6),(7, 7),(8, 8);
+INSERT INTO page (page_id, page_ordre, page_route) VALUES
+(1, 1, 'home'), (2, 2, 'about'), (3, 3, 'event'), (4, 4, 'hours'),
+(5, 5, 'menu'), (6, 6, 'book'), (7, 7, 'rating'), (8, 8, 'contact');
 
 INSERT INTO traduction (traductible_id, langue_id, traduction_libelle) VALUES
 (1, 0, 'Accueil'), (2, 0, 'À propos'), (3, 0, 'Événements'), (4, 0, 'Horaires'),
@@ -88,21 +89,24 @@ INSERT INTO traduction (traductible_id, langue_id, traduction_libelle) VALUES
     PAGE 1 : Accueil
 */ --------------------------------
 
-INSERT INTO conteneur (conteneur_libelle, page_id, police_id, conteneur_texte,
-conteneur_centre, conteneur_fond, conteneur_hex, conteneur_ligne, conteneur_colonne) VALUES
-('1Accueil1', 1, 18, '# La Romana', TRUE, '222222', 'ffffff', 1, NULL),
-('2Accueil2', 1, NULL, '', NULL, '000000', NULL, 2, 1),
-('3Accueil3', 1, NULL, '### Bienvenue\nDans un cadre soigné et authentiquement italien, venez déguster:\n- Pizzas\n- Pâtes\n- Desserts\nEt autres délicatesses onctueuses !', FALSE, '222222', 'ffffff', 2, 2),
-('4Accueil4', 1, 3, '#### Réservez dès maintenant [ici](https://www.youtube.com/watch?v=dQw4w9WgXcQ)\nOu appellez nous au **0123456789**', TRUE, '222222', 'ffccaa', 3, NULL);
+INSERT INTO photo (photo_libelle, photo_url) VALUES ('Annecy', 'photo1.png'), ('Robin', 'photo2.jpg');
+
+INSERT INTO conteneur (conteneur_libelle, page_id, photo_id, police_id, conteneur_texte,
+conteneur_ligne, conteneur_colonne, conteneur_aligne, conteneur_bordure, conteneur_couleur,
+conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_rayon, conteneur_visible) VALUES
+('1Accueil1', 1, NULL, 18, '# La Romana',
+1, 1, 5, NULL, 'ffffffff', NULL, NULL, NULL, NULL, '0px', TRUE),
+('2Accueil2', 1, 2, NULL, NULL,
+2, 1, 5, '00000080', 'ffffffff', NULL, '25vw', NULL, '00000080', '15px', TRUE),
+('3Accueil3', 1, NULL, NULL, '### Bienvenue\nDans un cadre soigné et authentiquement italien, venez déguster:\n- Pizzas\n- Pâtes\n- Desserts\nEt autres délicatesses onctueuses !',
+2, 2, 4, 'ffffffff', 'ffffffaa', '00000055', '25vw', '20px 40px 30px 10px', NULL, '15px',TRUE),
+('4Accueil4', 1, 1, 3, '#### Réservez dès maintenant <u>[ici](https://www.youtube.com/watch?v=dQw4w9WgXcQ)</u>\nOu appellez nous au **0123456789**',
+3, 1, 2, NULL, 'aa5500ff', '000000aa', NULL, '25px', NULL, '0px', TRUE);
 
 INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
 (0, 1, '<h1>La Romana</h1>'),
 (0, 3, '<h3>Bienvenue</h3><p>Dans un cadre soigné et authentiquement italien, venez déguster:</p><ul><li>Pizzas</li><li>Pâtes</li><li>Desserts</li></ul><p>Et autres délicatesses onctueuses !</p>'),
-(0, 4, '<h4>Réservez dès maintenant <a href=''https://www.youtube.com/watch?v=dQw4w9WgXcQ''>ici</a></h4><p>Ou appellez nous au <b>0123456789</b></p>'),
+(0, 4, '<h4>Réservez dès maintenant <u><a href=''https://www.youtube.com/watch?v=dQw4w9WgXcQ''>ici</a></u></h4><p>Ou appellez nous au <b>0123456789</b></p>'),
 (1, 1, '<h1>La Romana</h1>'),
 (1, 3, '<h3>Welcome</h3><p>In a polished and authentically italian setting, come get a taste of:</p><ul><li>Pizzas</li><li>Pastas</li><li>Desserts</li></ul><p>And other flavorful delicacies!</p>'),
-(1, 4, '<h4>Book right now <a href=''https://www.youtube.com/watch?v=dQw4w9WgXcQ''>here</a></h4><p>Or call us at <b>+33123456789</b></p>');
-
-INSERT INTO photo (photo_libelle, photo_url) VALUES ('Robin', 'photo1'), ('Annecy', 'photo2');
-
-INSERT INTO galerie (photo_id, conteneur_id) VALUES (1, 2), (2, 4);
+(1, 4, '<h4>Book right now <u><a href=''https://www.youtube.com/watch?v=dQw4w9WgXcQ''>here</a></u></h4><p>Or call us at <b>+33123456789</b></p>');

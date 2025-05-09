@@ -14,10 +14,7 @@ class Photo extends Model
         'photo_url'
     ];
 
-    public function Galerie() {
-        return $this->hasMany(Galerie::class, "photo_id", "photo_id")->get();
-    }
-    public function Texte() {
-        return $this->hasMany(Texte::class, "photo_id", "photo_id")->get();
+    public function Conteneur() {
+        return $this->hasMany(Conteneur::class, "photo_id", "photo_id")->get();
     }
 }

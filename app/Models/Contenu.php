@@ -17,9 +17,9 @@ class Contenu extends Model
     ];
 
     public function Conteneur() {
-        return $this->hasOne(Conteneur::class, "conteneur_id")->get()->first();
+        return $this->hasOne(Conteneur::class, "conteneur_id", "conteneur_id")->get()->first();
     }
     public function Langue() {
-        return $this->hasOne(Langue::class, "langue_id")->get()->first();
+        return $this->hasOne(Langue::class, "langue_id", "langue_id")->get()->first();
     }
 }

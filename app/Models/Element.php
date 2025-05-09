@@ -15,7 +15,7 @@ class Element extends Model
     ];
 
     public function Traductible() {
-        return $this->hasOne(Traductible::class, "element_id")->get()->first();
+        return $this->hasOne(Traductible::class, "traductible_id", "element_id")->get()->first();
     }
     public function Presence(){
         return $this->hasMany(Presence::class, "element_id", "element_id")->get();

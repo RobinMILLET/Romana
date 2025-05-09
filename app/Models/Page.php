@@ -13,7 +13,8 @@ class Page extends Model
     public $incrementing = false;
     protected $fillable = [
         'page_id',
-        'page_ordre'
+        'page_ordre',
+        'page_route'
     ];
 
     public function Traductible() {
@@ -26,7 +27,7 @@ class Page extends Model
     public function obtenirTraduction(int $langue_id) {
         $traductible = $this->Traductible();
         if (!$traductible) throw new Exception("Page has no Traductible ?");
-        $traduction = $traductible->Traduction()->firstWhere('langue_id', '=', $langue_id);
+        $traduction = $traductible->Traduction()->firstWhere('langue_id', $langue_id);
         // Obtenir la page voulue en langue $langue_id
         if ($traduction) return $traduction->traduction_libelle;
         // TODO: Appeller l'API de traduction et créer le texte ici

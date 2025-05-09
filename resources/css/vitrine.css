@@ -1,21 +1,35 @@
 section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
 }
   
 section > * {
-    flex: 1 1 0;
-    min-width: 0;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
-@media (max-width: 768px) {
-    section {
-        display: block;
-    }
-  
-    section > * {
-        flex: 1 1 100%;
-    }
+.conteneur {
+  width: '100%';
+  display: 'flex';
+  flex-direction: 'column';
+}
+
+.conteneur h1 { font-size: 3rem; font-weight: bold; margin-bottom: 0.25em; }
+.conteneur h2 { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.2em; }
+.conteneur h3 { font-size: 2rem; font-weight: bold; margin-bottom: 0.15em; }
+.conteneur h4 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.1em; }
+.conteneur p { margin-bottom: 0.5em; line-height: 1.5; }
+.conteneur ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5em; }
+.conteneur ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5em; }
+.conteneur table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+.conteneur th, .conteneur td {
+  border: 1px solid #888;
+  padding: 0.5em;
 }

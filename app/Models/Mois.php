@@ -16,6 +16,6 @@ class Mois extends Model
     ];
 
     public function Horaire(){
-        return $this->hasMany(Horaire::class, "horaire_id")->get()->first();
+        return $this->hasMany(Horaire::class, "horaire_id", "horaire_id")->get()->first();
     }
 }

@@ -17,14 +17,15 @@ class Reservation extends Model
         'reservation_prenom',
         'reservation_telephone',
         'reservation_personnes',
+        'reservation_commentaire',
         'reservation_horaire',
         'reservation_anonymiser'
     ];
 
     public function Personnel() {
-        return $this->hasMany(Personnel::class, "personnel_id")->get()->first();
+        return $this->hasMany(Personnel::class, "personnel_id", "personnel_id")->get()->first();
     }
     public function Statut() {
-        return $this->hasOne(Statut::class, "statut_id")->get()->first();
+        return $this->hasOne(Statut::class, "statut_id", "statut_id")->get()->first();
     }
 }

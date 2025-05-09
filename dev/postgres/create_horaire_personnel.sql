@@ -143,6 +143,7 @@ CREATE TABLE reservation (
     reservation_prenom VARCHAR(256) NULL,
     reservation_telephone CHAR(10) NULL,
     reservation_personnes INT NOT NULL,
+    reservation_commentaire VARCHAR(512) NULL,
     reservation_creation TIMESTAMP NOT NULL DEFAULT now(),
     reservation_horaire TIMESTAMP NOT NULL,
     reservation_anonymiser BOOLEAN NOT NULL DEFAULT FALSE,

@@ -16,7 +16,4 @@ class Langue extends Model
     public function Contenu(){
         return $this->hasMany(Contenu::class, "langue_id", "langue_id")->get();
     }
-    public function Texte(){
-        return $this->hasMany(Texte::class, "langue_id", "langue_id")->get();
-    }
 }
