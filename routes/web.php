@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\VitrineController;
+use App\Models\Langue;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -22,7 +24,7 @@ Route::get('/menu', function(){
     return VitrineController::index(5);
 })->name('menu');
 Route::get('/book', function(){
-    return VitrineController::index(6);
+    //
 })->name('book');
 Route::get('/rating', function(){
     return VitrineController::index(7);
@@ -33,6 +35,6 @@ Route::get('/contact', function(){
 
 
 Route::get('/langue/{langue_id}', function($langue_id){
-    session(['locale' => $langue_id]);
+    session(['locale' => Langue::find($langue_id)]);
     return redirect()->back();
 })->name('langue');

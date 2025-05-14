@@ -16,8 +16,16 @@ CREATE SEQUENCE sq_reservation;
 CREATE SEQUENCE sq_personnel;
 
 /* --------------------------------
-    HORAIRE
+    PLANNING
 */ --------------------------------
+
+CREATE TABLE planning (
+    planning_debut TIMESTAMP PRIMARY KEY,
+    planning_fin TIMESTAMP NOT NULL,
+    planning_couverts INT NOT NULL,
+    CONSTRAINT ck_planning
+        CHECK (planning_debut < planning_fin)
+);
 
 CREATE TABLE horaire (
     horaire_id INT PRIMARY KEY DEFAULT nextval('sq_horaire'),
@@ -70,9 +78,7 @@ CREATE TABLE fermeture (
     fermeture_fin TIMESTAMP NOT NULL,
     fermeture_couverts INT NOT NULL,
     CONSTRAINT ck_fermeture
-        CHECK (fermeture_debut < fermeture_fin),
-    CONSTRAINT ck_fermeture_couverts
-        CHECK (fermeture_couverts >= 0)
+        CHECK (fermeture_debut < fermeture_fin)
 );
 
 /* --------------------------------
@@ -178,6 +184,8 @@ CREATE UNIQUE INDEX ix_mois_pk ON mois (mois_id, horaire_id);
 CREATE UNIQUE INDEX ix_permission_pk ON permission (personnel_id, typepermission_id);
 CREATE UNIQUE INDEX ix_personnel_id ON personnel (personnel_id);
 CREATE UNIQUE INDEX ix_personnel_nom ON personnel (personnel_nom);
+CREATE UNIQUE INDEX ix_planning_debut ON planning (planning_debut);
+CREATE INDEX ix_planning_fin ON planning (planning_fin);
 CREATE UNIQUE INDEX ix_reservation_id ON reservation (reservation_id);
 CREATE INDEX ix_reservation_statut ON reservation (statut_id);
 CREATE UNIQUE INDEX ix_reservation_num ON reservation (reservation_num);

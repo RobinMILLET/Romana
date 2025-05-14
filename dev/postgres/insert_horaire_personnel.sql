@@ -19,12 +19,14 @@ ALTER SEQUENCE sq_personnel RESTART;
     DELETE
 */ --------------------------------
 
+DELETE FROM planning;
 DELETE FROM horaire;
 DELETE FROM fermeture;
 DELETE FROM reservation;
 DELETE FROM statut;
 DELETE FROM historique;
 DELETE FROM personnel;
+DELETE FROM typepersonnel;
 
 /* --------------------------------
     HORAIRE
@@ -42,9 +44,6 @@ INSERT INTO jour (horaire_id, jour_id) VALUES
 
 INSERT INTO mois (horaire_id, mois_id) VALUES
 (3, 7), (3, 8);
-
-INSERT INTO fermeture (fermeture_debut, fermeture_fin, fermeture_couverts) VALUES
-('2025-12-15', '2026-01-15', 0);
 
 /* --------------------------------
     PERSONNEL
