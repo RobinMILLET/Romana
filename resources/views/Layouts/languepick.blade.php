@@ -5,7 +5,7 @@
 @endphp
 
 <form method="GET" action="#">
-    <select onchange="window.location.href='/langue/' + this.value" class="rounded px-2 py-1 bg-black">
+    <select onchange="window.location.href='/api/lang/' + this.value" class="rounded px-2 py-1 bg-black">
         @foreach ($langues as $langue)
             <option value="{{ $langue->langue_id}}" {{ $langue == $active ? 'selected' : '' }}>
                 {{ $langue->langue_affichage }}

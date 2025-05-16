@@ -241,7 +241,8 @@ CREATE INDEX ix_conteneur_evenement ON conteneur (evenement_id);
 CREATE INDEX ix_conteneur_page ON conteneur (page_id);
 CREATE INDEX ix_conteneur_photo ON conteneur (photo_id);
 CREATE INDEX ix_conteneur_police ON conteneur (police_id);
-CREATE UNIQUE INDEX ix_conteneur_position ON conteneur (conteneur_ligne, conteneur_colonne);
+CREATE UNIQUE INDEX ix_conteneur_position ON conteneur
+    (page_id, evenement_id, conteneur_ligne, conteneur_colonne);
 CREATE INDEX ix_conteneur_visible ON conteneur (conteneur_visible);
 CREATE UNIQUE INDEX ix_contenu_pk ON contenu (conteneur_id, langue_id);
 CREATE UNIQUE INDEX ix_element_id ON element (element_id);

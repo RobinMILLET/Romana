@@ -22,3 +22,21 @@ header {
 .red {
     color: red;
 }
+
+.g-recaptcha {
+    width: fit-content;
+    margin: 1px;
+    border: 1px solid transparent;
+}
+
+.red-border {
+    border: 1px solid red;
+}
+
+iframe {
+    margin: 1px;
+}
+
+iframe:focus-visible {
+    outline: none;
+}

@@ -47,7 +47,7 @@ class Conteneur extends Model
     }
 
     public function obtenirContenuTraduit(int $langue_id) {
-        if (!$this->conteneur_texte) return Null;
+        if (!$this->conteneur_texte) return "";
         $contenu = $this->Contenu()->firstWhere('langue_id', $langue_id);
         // Obtenir le contenu du texte en langue $langue_id
         if ($contenu) return $contenu->contenu_texte;

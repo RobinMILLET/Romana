@@ -1,6 +1,10 @@
 @extends('Layouts.app')
 @vite(['resources/css/vitrine.css'])
 
+@if (strval($page->page_id) == '6')
+    @vite(['resources/js/Scripts/captcha.js'])
+@endif
+
 @section('content')
 
 @foreach ($lignes as $ligne)
@@ -8,7 +12,7 @@
 @foreach ($ligne as $conteneur)
 
 <Conteneur :conteneur = "{{ $conteneur }}" >
-{!! $conteneur->conteneur_contenu_texte !!}
+{!! $textes[$conteneur->conteneur_id] !!}
 </Conteneur>
 
 @endforeach

@@ -110,3 +110,16 @@ INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
 (1, 1, '<h1>La Romana</h1>'),
 (1, 3, '<h3>Welcome</h3><p>In a polished and authentically italian setting, come get a taste of:</p><ul><li>Pizzas</li><li>Pastas</li><li>Desserts</li></ul><p>And other flavorful delicacies!</p>'),
 (1, 4, '<h4>Book right now <u><a href=''https://www.youtube.com/watch?v=dQw4w9WgXcQ''>here</a></u></h4><p>Or call us at <b>+33123456789</b></p>');
+
+/* --------------------------------
+    PAGE 6 : Réservation
+*/ --------------------------------
+
+INSERT INTO conteneur (conteneur_libelle, page_id, photo_id, police_id, conteneur_texte,
+conteneur_ligne, conteneur_colonne, conteneur_aligne, conteneur_bordure, conteneur_couleur,
+conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_rayon, conteneur_visible) VALUES
+('5Reserv1', 6, NULL, 1, '?',
+1, 1, 2, '33333333', 'ffffffff', NULL, NULL, '5vw 10vw', NULL, '0 px', TRUE);
+
+INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
+(0, 5, '<h1>Effectuer une réservation</h1><form#reservation><ol><li>Nombre de personnes</li><li>Date de la réservation</li><li>Horaire de la réservation</li><li>Nom</li><li>Prénom</li><li>Téléphone</li></ol><g-recaptcha#reservation.dark/><button#submit>Réserver</button></form>');

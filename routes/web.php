@@ -1,12 +1,15 @@
 <?php
 
-use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\VitrineController;
 use App\Models\Langue;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/test', function(){
+    //
+})->name('test');
+
 Route::get('/', function(){
-    return redirect()->route('home');
+    return VitrineController::index(1);
 });
 Route::get('/home', function(){
     return VitrineController::index(1);
@@ -24,7 +27,7 @@ Route::get('/menu', function(){
     return VitrineController::index(5);
 })->name('menu');
 Route::get('/book', function(){
-    //
+    return VitrineController::index(6);
 })->name('book');
 Route::get('/rating', function(){
     return VitrineController::index(7);
@@ -34,7 +37,18 @@ Route::get('/contact', function(){
 })->name('contact');
 
 
-Route::get('/langue/{langue_id}', function($langue_id){
-    session(['locale' => Langue::find($langue_id)]);
-    return redirect()->back();
-})->name('langue');
+Route::get('/api/lang/{langue_id}', function($langue_id){
+    $lang = Langue::find($langue_id); // Trouver la langue
+    if ($lang) session(['locale' => $lang]); // Si trouvée, mettre à jour la session
+    return redirect()->back(); // Redirection en arrière
+})->name('api.lang');
+
+Route::get('/api/free/{nb?}/{date?}', function($nb = null, $date = null) {
+    // NB null : Donne les jours disponibles
+    // DATE null : Donne les jours disponibles pour NB personnes
+    // else : PlanningController::tableau(start: $date, filter: $nb);
+})->name('api.free');
+
+Route::post('/api/book', function(){
+    //
+})->name('api.book');

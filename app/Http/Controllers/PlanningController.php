@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Constante;
 use App\Models\Fermeture;
 use App\Models\Horaire;
 use App\Models\Planning;
@@ -208,39 +209,80 @@ class PlanningController extends Controller
             date_add(clone $datetime, $duree)->format("Y-m-d H:i:s")])->sum("reservation_personnes");
     }
 
-    public static function tableau(DateTime $start, DateTime $end,
-            DateInterval $interval, bool $truncate = false) {
+    public static function tableau(DateTime $start, DateTime $end = null,
+            int|bool $filter = null, DateInterval $interval = null) {
+        
+        if ($end === null) { // Si la fin n'est pas donnée,
+            // on donne les disponibilités du jour entier
+            $start = $start->setTime(0, 0, 0, 0);
+            $end = date_add(clone $start, new DateInterval("P1D"));
+        }
+        
         $start_str = $start->format("Y-m-d H:i:s") ; $end_str = $end->format("Y-m-d H:i:s");
         // $start doit être plus tôt que $end
         if ($start >= $end) { throw new Exception("Start $start_str must be earlier than end $end_str."); }
 
+        // Récupération des constantes depuis la base de données
+        $duree = Constante::interval('duree_reservation', 'PTM');
+        if ($interval === null) $interval = Constante::interval('interval_reservation', 'PTM');
+
+        // On transforme les deux intervales en int (secondes)
+        $interval_secs = date_create('@0')->add($interval)->getTimestamp();
+        $duree_secs = date_create('@0')->add($duree)->getTimestamp();
+        // On effectue une divisions pour savoir combien il faut de $interval pour un $duree
+        $creneaux = (int) ceil($duree_secs / (float) $interval_secs);
+
         $array = []; // Initialiser la liste à créer
         // On itère entre $start et $end, créant une entrée dans la liste tous les $interval
-        for ($now = clone $start ; $now <= $end ; $now = date_add($now, $interval)) {
+        // On veut aller jusqu'à $end+$duree pour que les ["allow"] en fin de listes soient vrais
+        for ($now = clone $start ; $now < date_add(clone $end, $duree) ; $now = date_add($now, $interval)) {
             // Obtenir le planning qui gère $now
             $planning = Planning::where("planning_debut", "<=", $now->format("Y-m-d H:i:s"))
                 ->where("planning_fin", ">", $now->format("Y-m-d H:i:s"))->get()->first();
-            // S'il est nul (n'existe pas), celà veut dire que le restaurant est fermé (0)
+            // S'il est nul (n'existe pas), cela veut dire que le restaurant est fermé (0)
             $max = $planning ? $planning->planning_couverts : 0;
             // Calculer le nombres de places réservées à l'instant $now
-            // TODO: Constante éditable pour la durée d'une réservation
-            $res = PlanningController::comptePlacesPrises($now, new DateInterval("PT2H"));
+            $res = PlanningController::comptePlacesPrises($now, $duree);
             // Enregistrer les données et les ajouter à la liste
             // Notez l'utilisation de 'clone' pour séparer l'objet de son instance
-            $array[] = ["dt" => clone $now, "max" => $max, "res" => $res, "free" => $max - $res];
+            $array[] = [
+                "datetime" => clone $now, "maximum" => $max,
+                "booked" => $res, "free" => $max - $res, "allow" => 0
+            ];
         }
 
+        // Pour chaque créneau où on pourrait insérer une réservation
+        for ($i = 0; $i < count($array) - $creneaux ; $i++) {
+            // Ces créneaux sont ceux qui doivent être suffisament libre
+            $slice = array_slice($array, $i, $creneaux);
+            // On en extrait le nombre de places libres
+            $values = array_column($slice, "free");
+            // La disponibilité correspond à la valeur la plus petite
+            $array[$i]["allow"] = min($values);
+        }
+
+        // Les ["allow"] ont étés créés, on s'assure de respecter l'interval $start - $end
+        $array = array_slice($array, 0, -$creneaux);
+
         // Pas besoins de tronquer ; on rend le résultat
-        if (!$truncate) return $array;
+        if ($filter === null || $filter === false) return $array;
 
         // Supprimer les x,0,0,x au début
-        while (count($array) && $array[0]['max'] == 0 &&
-            $array[0]['res'] == 0) array_shift($array);
+        while (count($array) && $array[0]['maximum'] == 0 &&
+            $array[0]['booked'] == 0) array_shift($array);
 
         // Supprimer les x,0,0,x à la fin
-        while (count($array) && end($array)['max'] == 0 &&
-            end($array)['res'] == 0) array_pop($array);
+        while (count($array) && end($array)['maximum'] == 0 &&
+            end($array)['booked'] == 0) array_pop($array);
 
-        return $array;
+        // Pas besoins de filtrer ; on rend le résultat
+        if ($filter === true) return $array;
+
+        $new_array = []; // Initialiser la liste à rendre
+        foreach ($array as $element) {
+            // Si égal ou supérieur au filtre, on garde
+            if ($element["allow"] >= $filter) $new_array[] = $element;
+        }
+        return $new_array;
     }
 }
