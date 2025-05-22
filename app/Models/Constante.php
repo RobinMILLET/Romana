@@ -55,9 +55,9 @@ class Constante extends Model
         switch ($type) { 
             case 'boolean': 
                 if (array_search(strtolower($value), // les TRUE
-                    ['true', 'yes', 'vrai', 'oui', 't', 'y', 'v', 'o'])) return true;
+                    ['true', 'yes', 'vrai', 'oui', 't', 'y', 'v', 'o']) !== false) return true;
                 if (array_search(strtolower($value), // les FALSE
-                    ['false', 'faux', 'f', 'non', 'no', 'n'])) return false;
+                    ['false', 'faux', 'f', 'non', 'no', 'n']) !== false) return false;
                 return boolval($value); // Dernier cas, toute autre valeur
             case 'integer': return intval($value);
             case 'float': return floatval($value);

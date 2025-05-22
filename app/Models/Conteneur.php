@@ -48,10 +48,17 @@ class Conteneur extends Model
 
     public function obtenirContenuTraduit(int $langue_id) {
         if (!$this->conteneur_texte) return "";
-        $contenu = $this->Contenu()->firstWhere('langue_id', $langue_id);
-        // Obtenir le contenu du texte en langue $langue_id
-        if ($contenu) return $contenu->contenu_texte;
-        // TODO: Appeller l'API de traduction et créer le texte ici
+        // Tester si c'est un formulaire
+        $form = $this->formulaire($langue_id);
+        if ($form) {
+            if(view()->exists($form)) return $form;
+        }
+        else {
+            $contenu = $this->Contenu()->firstWhere('langue_id', $langue_id);
+            // Obtenir le contenu du texte en langue $langue_id
+            if ($contenu) return $contenu->contenu_texte;
+            // else TODO: Appeller l'API de traduction et créer le texte ici
+        }
         // S'il n'existe pas, fallback en anglais
         if ($langue_id >= 2) return $this->obtenirContenuTraduit(1);
         // S'il n'existe toujours pas, chercher en français
@@ -59,5 +66,12 @@ class Conteneur extends Model
         // Si rien n'existe, texte d'erreur par défaut
         if ($langue_id == 0) return "ERREUR : Traduction de conteneur n°$this->conteneur_id";
         else throw new Exception("How did we get here ? \$langue_id is $langue_id..."); // unreachable
+    }
+
+    public function formulaire($langue_id){
+        if (!preg_match("/^<form#[a-z]+>$/", $this->conteneur_texte)) return null;
+        $nom = substr($this->conteneur_texte, 6, strlen($this->conteneur_texte)-7);
+        $code = Langue::find($langue_id)->langue_code;
+        return "Forms.".$nom."_".$code;
     }
 }

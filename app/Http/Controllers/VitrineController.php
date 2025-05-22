@@ -22,7 +22,7 @@ class VitrineController extends Controller
                 ->orderBy('conteneur_colonne')->get();
             // Obtenir les traductions depuis Contenu->contenu_texte
             foreach ($local as $conteneur) {
-                $textes[strval($conteneur->conteneur_id)] = VitrineController::remplaceFormulaire(
+                $textes[strval($conteneur->conteneur_id)] = VitrineController::replacer(
                     $conteneur->obtenirContenuTraduit($langue->langue_id));
                 // On place aussi les valeurs de photo et police si présentes
                 $conteneur->conteneur_photo_url = $conteneur->Photo() ? $conteneur->Photo()->photo_url : null;
@@ -38,22 +38,15 @@ class VitrineController extends Controller
         ]);
     }
 
-    public static function remplaceFormulaire(string $txt) {
+    public static function replacer(string $text) {
         foreach ([ // Rechercher et remplacer avec [cible => résultat]
-            "<form#reservation>" => "<form method='POST' action='".route('api.book').
-                "'><input type='hidden' name='_token' value='".csrf_token()."'/>",
-            "<button#submit>" => "<button type='submit' disabled ".
-            "onmouseenter='submit_enter(this)' onmouseleave='submit_leave()'>",
-            
-            "<g-recaptcha#reservation.white/>" => "<div class='g-recaptcha' data-sitekey='".
-                env('RECAPTCHA_SITE_KEY')."' data-theme='light' ".
-                "data-callback='callback' data-expired-callback='expire'></div>",
-            "<g-recaptcha#reservation.dark/>" => "<div class='g-recaptcha' data-sitekey='".
-                env('RECAPTCHA_SITE_KEY')."' data-theme='dark' ".
-                "data-callback='callback' data-expired-callback='expire'></div>",
+            "<googlemap/>" => "<iframe class='gmap' src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112913.".
+                "34543813349!2d6.032387482375051!3d45.95580804090011!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.".
+                "1!3m3!1m2!1s0x478b8fe110e3bc4b%3A0x4171e0c94e0c9be8!2sLa%20Romana!5e0!3m2!1sfr!2sfr!4v1747588357514!5m2!1sfr!2sfr' ".
+                "allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade' width='100%' height='100%'></iframe>"
         ] as $key => $value) { // On itère et on remplace tout
-            $txt = str_replace($key, $value, $txt);
+            $text = str_replace($key, $value, $text);
         }
-        return $txt;
+        return $text;
     }
 }

@@ -31,7 +31,3 @@ window.callback = recaptcha_callback;
 window.expire = recaptcha_expire;
 window.submit_enter = submit_enter;
 window.submit_leave = submit_leave;
-
-var script = document.createElement("script");
-script.src = 'https://www.google.com/recaptcha/api.js';
-document.head.appendChild(script);

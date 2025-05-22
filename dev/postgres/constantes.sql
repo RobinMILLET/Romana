@@ -35,6 +35,11 @@ INSERT INTO constante VALUES
 'Si activé, l''avance nécéssaire pour réserver sera multipliée par le nombre de personnes attendues.',
 'boolean', NULL, NULL, 'false'),
 
+('captcha_reservation',
+'Active ou désactive le CAPTCHA sur la réservation.',
+NULL,
+'boolean', NULL, NULL, 'false'),
+
 ('reservation_personnes_max',
 'Nombre maximal de personnes en une seule réservation.',
 NULL,
@@ -48,7 +53,7 @@ NULL,
 ('reservation_temps_min',
 'Temps avant l''horaire pendant lequel où la réservation ne peut plus être créée ou modifiée.',
 'Un client pourra créer ou modifier une réservation au plus tard X avant son horaire.',
-'interval', '<=P2W', NULL, 'PT1H'),
+'interval', '<=P2W', NULL, 'PT8H'),
 
 ('duree_reservation',
 'Durée moyenne d''une réservation, en minutes.',

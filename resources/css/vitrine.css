@@ -1,9 +1,10 @@
 section {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 1rem;
   margin: 1.5rem 0;
+  height: fit-content;
 }
   
 section > * {
@@ -17,11 +18,14 @@ section > * {
   flex-direction: column;
 }
 
-.conteneur form {
+.conteneur > * {
+  color: inherit;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: inherit;
-  align-items: inherit;
+  justify-content: space-between;
+  align-items: stretch;
 }
 
 .conteneur h1 { font-size: 3rem; font-weight: bold; margin-bottom: 0.25em; }
@@ -33,15 +37,17 @@ section > * {
 .conteneur ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5em; }
 .conteneur table {
   border-collapse: collapse;
+  border-style: hidden;
   margin: 1em 0;
   width: 100%;
 }
 .conteneur th, .conteneur td {
-  border: 1px solid #888;
+  border: 1px dotted #555;
   padding: 0.5em;
 }
 
 button:disabled {
+  box-shadow: 0px 2px black;
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -51,14 +57,33 @@ button:not(:disabled):not(:active):hover {
 }
 
 button:not(:disabled):active {
+  box-shadow: 0px 1px black;
   background-color: #aaa4;
 }
 
 .conteneur button {
   border: 1px solid #aaa8;
-  box-shadow: 5px 5px black;
+  box-shadow: 0px 3px black;
   border-radius: 5px;
   padding: 5px;
   margin: 5px;
 }
 
+.conteneur form {
+  width: fit-content;
+}
+
+.conteneur .g-recaptcha {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.conteneur input, .conteneur select, .conteneur textarea {
+  display: block;
+  margin: 5px 5px 20px 5px;
+  padding: 2.5px 5px;
+  width: min(90vw, 300px);
+  background-color: #111;
+  border: 1px solid #555;
+  color: white
+}

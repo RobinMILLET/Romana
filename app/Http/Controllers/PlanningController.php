@@ -21,7 +21,7 @@ class PlanningController extends Controller
         $start = DateTime::createFromFormat("Y-m-d H:i:s", $start_str);
         $end = DateTime::createFromFormat("Y-m-d H:i:s", $end_str);
         // $start doit être plus tôt que $end
-        if ($start >= $end) { throw new Exception("Start $start_str must be earlier than end $end_str."); }
+        if ($start >= $end) throw new Exception("Start $start_str must be earlier than end $end_str.");
         
         // Si le début est avant $end ET la fin est après $start
         // Donc cherche tous les plannings qui sont partiellement dans l'interval,
@@ -209,7 +209,7 @@ class PlanningController extends Controller
             date_add(clone $datetime, $duree)->format("Y-m-d H:i:s")])->sum("reservation_personnes");
     }
 
-    public static function tableau(DateTime $start, DateTime $end = null,
+    public static function crenaux(DateTime $start, DateTime $end = null,
             int|bool $filter = null, DateInterval $interval = null) {
         
         if ($end === null) { // Si la fin n'est pas donnée,
@@ -220,7 +220,7 @@ class PlanningController extends Controller
         
         $start_str = $start->format("Y-m-d H:i:s") ; $end_str = $end->format("Y-m-d H:i:s");
         // $start doit être plus tôt que $end
-        if ($start >= $end) { throw new Exception("Start $start_str must be earlier than end $end_str."); }
+        if ($start >= $end) throw new Exception("Start $start_str must be earlier than end $end_str.");
 
         // Récupération des constantes depuis la base de données
         $duree = Constante::interval('duree_reservation', 'PTM');
@@ -237,16 +237,16 @@ class PlanningController extends Controller
         // On veut aller jusqu'à $end+$duree pour que les ["allow"] en fin de listes soient vrais
         for ($now = clone $start ; $now < date_add(clone $end, $duree) ; $now = date_add($now, $interval)) {
             // Obtenir le planning qui gère $now
-            $planning = Planning::where("planning_debut", "<=", $now->format("Y-m-d H:i:s"))
-                ->where("planning_fin", ">", $now->format("Y-m-d H:i:s"))->get()->first();
+            $now_str = $now->format("Y-m-d H:i:s");
+            $planning = Planning::where("planning_debut", "<=", $now_str)
+                ->where("planning_fin", ">", $now_str)->get()->first();
             // S'il est nul (n'existe pas), cela veut dire que le restaurant est fermé (0)
             $max = $planning ? $planning->planning_couverts : 0;
             // Calculer le nombres de places réservées à l'instant $now
             $res = PlanningController::comptePlacesPrises($now, $duree);
             // Enregistrer les données et les ajouter à la liste
-            // Notez l'utilisation de 'clone' pour séparer l'objet de son instance
             $array[] = [
-                "datetime" => clone $now, "maximum" => $max,
+                "datetime" => $now_str, "maximum" => $max,
                 "booked" => $res, "free" => $max - $res, "allow" => 0
             ];
         }
@@ -284,5 +284,42 @@ class PlanningController extends Controller
             if ($element["allow"] >= $filter) $new_array[] = $element;
         }
         return $new_array;
+    }
+
+    public static function calendrier(int $filter = null,
+            DateTime $start = null, DateTime $end = null) {
+        if ($start) $start_str = $start->format("Y-m-d H:i:s");
+        if ($end) $end_str = $end->format("Y-m-d H:i:s");
+        if ($start && $end && $start >= $end) // $start doit être plus tôt que $end
+            throw new Exception("Start $start_str must be earlier than end $end_str.");
+            
+        // Récupération des plannings
+        $plannings = Planning::orderBy('planning_debut')->get();
+        if ($start) $plannings = $plannings->where('planning_fin', '>', $start_str);
+        if ($end) $plannings = $plannings->where('planning_debut', '<', $end_str);
+
+        $jours = []; // Initialiser la liste à rendre
+        foreach ($plannings as $planning) {
+            // Couverts est donné en string, il faut le cast en int
+            $couverts = (int) $planning->planning_couverts;
+            // Si filtre donné, alors retourner uniquement les plannings qui sont >=
+            if ($filter && $couverts < $filter) continue;
+            
+            // La clé est 'YYYY-mm-dd' (on prend la date sans l'heure)
+            $debut = substr($planning->planning_debut, 0, 10);
+            $fin = substr($planning->planning_fin, 0, 10);
+
+            // Si (($début pas dans $jours OU nouveau max pour $jours[$début]) ET
+            // ($start est null OU $debut est >= à $start)) ALORS ...
+            if ((!array_key_exists($debut, $jours) || $couverts > $jours[$debut])
+                && (!$start || DateTime::createFromFormat("Y-m-d", $debut) >= $start))
+                    $jours[$debut] = $couverts;
+                    
+            // Même chose pour $end et $fin
+            if ((!array_key_exists($fin, $jours) || $couverts > $jours[$fin])
+                && (!$end || DateTime::createFromFormat("Y-m-d", $fin <= $end)))
+                    $jours[$fin] = $couverts;
+        }
+        return $jours;
     }
 }

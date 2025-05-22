@@ -4,7 +4,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Felipa&display=swap');
 
-html {
+html, body {
     background-color: #222222;
     color: white
 }
@@ -39,4 +39,8 @@ iframe {
 
 iframe:focus-visible {
     outline: none;
+}
+
+.gmap {
+    aspect-ratio: 1;
 }
