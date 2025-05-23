@@ -3,21 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const dtInput = document.getElementById('dtInput');
   const tmInput = document.getElementById('tmInput');
 
-  const formatter = new Intl.DateTimeFormat(navigator.language, {
+  // Formatteur automatique de date utilisant la langue de la page
+  const formatter = new Intl.DateTimeFormat(document.documentElement.lang, {
     weekday: "long", year: "numeric", month: "long", day: "numeric"
   });
 
   let maxNb = 25;
   let currDate = null;
-  let currHour = null;
+  let currTime = null;
 
+  // Récupération du max de personnes (/api/const)
   fetch('/api/const')
   .then(r => r.json())
   .then(data => {
     maxNb = data.reservation_personnes_max || maxNb;
     nbInput.max = maxNb;
     nbInput.value = 1;
-    updateDates(1);
+    updateDates();
   });
 
   nbInput.addEventListener('change', () => {
@@ -38,13 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   tmInput.addEventListener('change', () => {
-    currHour = tmInput.value;
+    currTime = tmInput.value;
   });
 
   function updateDates() {
     var nb = parseInt(nbInput.value) || 1;
+    // On utilise currDate pour sauvegarder le choix utilisateur
     if (currDate == null) currDate = dtInput.value;
 
+    // Retirer toutes les dates du select
     var dts = document.querySelectorAll(".dt");
     dts.forEach(dt => {
       dtInput.removeChild(dt);
@@ -55,15 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(dates => {
       dates.forEach(date => {
         const opt = document.createElement('option');
-        opt.value = date;
+        opt.value = date; // YYYY-MM-DD
         opt.textContent = formatter.format(new Date(date));
         opt.classList.add("dt");
         dtInput.appendChild(opt);
       });
       if (dates.includes(currDate)) {
+        // Si toujours valide, on remet le choix utilisateur
         dtInput.value = currDate;
       }
       else {
+        // Sinon, il devra en sélectionner un nouveau
         currDate = null;
       }
       updateHeures();
@@ -72,16 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateHeures() {
     var nb = parseInt(nbInput.value) || 1;
-    if (currHour == null) currHour = tmInput.value;
+    // On utilise currTime pour sauvegarder le choix utilisateur
+    if (currTime == null) currTime = tmInput.value;
 
+    // Retirer tous les créneaux du select
     var tms = document.querySelectorAll(".tm");
     tms.forEach(tm => {
       tmInput.removeChild(tm);
     })
 
     if (currDate == null) currDate = dtInput.value;
-    if (currDate == "null") {
-      currHour = null;
+    // Créneau ne peut exister sans date 
+    if (currDate == "") {
+      currTime = null;
       return;
     }
 
@@ -90,17 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(heures => {
       heures.forEach(heure => {
         const opt = document.createElement('option');
-        opt.value = heure;
-        opt.textContent = heure.slice(0, 5);
-        if (document.documentElement.lang !== "fr")
-          opt.textContent += " (UTC+2)";
+        opt.value = heure; // hh:mm:ss
+        opt.textContent = heure.slice(0, 5); // hh:mm
         opt.classList.add("tm");
         tmInput.appendChild(opt);
       });
-      if (heures.includes(currHour)) {
-        tmInput.value = currHour;
+      if (heures.includes(currTime)) {
+        // Si toujours valide, on remet le choix utilisateur
+        tmInput.value = currTime;
       } else {
-        currHour = null;
+        // Sinon, il devra en sélectionner un nouveau
+        currTime = null;
       }
     });
   }

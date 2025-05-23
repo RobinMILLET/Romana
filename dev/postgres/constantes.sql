@@ -40,6 +40,11 @@ INSERT INTO constante VALUES
 NULL,
 'boolean', NULL, NULL, 'false'),
 
+('fuseau_horaire',
+'Fuseau horaire à utiliser pour convertir les temps.',
+'Ce champ est technique et doit rester valide. La liste est disponible sur php.net/manual/fr/timezones.php',
+'string', NULL, NULL, 'Europe/Paris'),
+
 ('reservation_personnes_max',
 'Nombre maximal de personnes en une seule réservation.',
 NULL,

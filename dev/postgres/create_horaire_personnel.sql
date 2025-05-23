@@ -147,7 +147,7 @@ CREATE TABLE reservation (
     reservation_num CHAR(8) NOT NULL,
     reservation_nom VARCHAR(256) NULL,
     reservation_prenom VARCHAR(256) NULL,
-    reservation_telephone CHAR(10) NULL,
+    reservation_telephone CHAR(11) NULL,
     reservation_personnes INT NOT NULL,
     reservation_commentaire VARCHAR(512) NULL,
     reservation_creation TIMESTAMP NOT NULL DEFAULT now(),
@@ -162,7 +162,7 @@ CREATE TABLE reservation (
         REFERENCES personnel(personnel_id)
         ON DELETE SET NULL,
     CONSTRAINT ck_reservation_telephone
-        CHECK (reservation_telephone ~ '^[0-9]{10}$'),
+        CHECK (reservation_telephone ~ '^[0-9]{11}$'),
     CONSTRAINT ck_reservation_personnes
         CHECK (reservation_personnes > 0),
     CONSTRAINT ck_reservation_num

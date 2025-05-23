@@ -9,10 +9,38 @@ use App\Models\Planning;
 use App\Models\Reservation;
 use DateInterval;
 use DateTime;
+use DateTimeZone;
 use Exception;
 
 class PlanningController extends Controller
 {
+    public static function modTZ(DateTime $dt_utc = null) {
+        // Par défaut le DT est maintenant
+        if ($dt_utc === null) $dt_utc = new DateTime();
+        $new_dt = clone $dt_utc; // Éviter les modifications par &ref
+        // On donne un UTC, on veut UTC->TZ->UTC
+        $new_dt->setTimezone(new DateTimeZone('UTC'));
+        // La différence de TZ est déterminée par constante -> offset en integer...
+        $offset = (new DateTime('now', new DateTimeZone(Constante::key("fuseau_horaire"))))->getOffset();
+        $new_dt->modify("+$offset seconds"); // ...que l'on applique à notre objet
+        // Et enfin retourner la date TZ-naïve
+        return DateTime::createFromFormat('Y-m-d H:i:s', $new_dt->format('Y-m-d H:i:s'));
+    }
+
+    public static function bornesTZ(int $nb = null) {
+        $avance = Constante::key('reservation_temps_min');
+        // Créer les bornes pour la résolution du planning
+        $early = (PlanningController::modTZ())->add($avance);
+        // Déterminer si l'avance est simple ou multiplicative
+        if ($nb && Constante::key('avance_multiplicative'))
+            // Et l'appliquer en utilisant $nb
+            for ($i=1 ; $i<$nb ; $i++) $early->add($avance);
+        $late = (PlanningController::modTZ())->add(Constante::key('reservation_temps_max'));
+        return array($early, $late); // On retourne les deux
+        // [$early, $late] = PlanningController::bornesTZ($nb?);
+    }
+
+
     public static function changePlanning(DateTime $start, DateTime $end, $function = null) {
         // Par défaut, retire le planning entre $start et $end
         if ($function == null) $function = fn($x) => 0;
@@ -205,8 +233,9 @@ class PlanningController extends Controller
     public static function comptePlacesPrises(DateTime $datetime, DateInterval $duree) {
         // Retourne le nombre de place prises par les réservations à un moment donné,
         // sachant que une réservation bloque pendant $duree
-        return Reservation::whereBetween("reservation_horaire", [$datetime->format("Y-m-d H:i:s"),
-            date_add(clone $datetime, $duree)->format("Y-m-d H:i:s")])->sum("reservation_personnes");
+        return Reservation::whereBetween("reservation_horaire", [
+            date_sub(clone $datetime, $duree)->format("Y-m-d H:i:s"),
+            $datetime->format("Y-m-d H:i:s")])->sum("reservation_personnes");
     }
 
     public static function crenaux(DateTime $start, DateTime $end = null,
@@ -215,12 +244,15 @@ class PlanningController extends Controller
         if ($end === null) { // Si la fin n'est pas donnée,
             // on donne les disponibilités du jour entier
             $start = $start->setTime(0, 0, 0, 0);
-            $end = date_add(clone $start, new DateInterval("P1D"));
+            $new_end = date_add(clone $start, new DateInterval("P1D"));
+            // Récupérer les bornes min et max de réservation
+            [$early, $late] = PlanningController::bornesTZ(is_int($filter) ? $filter : null);
         }
+        else $new_end = clone $end;
         
-        $start_str = $start->format("Y-m-d H:i:s") ; $end_str = $end->format("Y-m-d H:i:s");
-        // $start doit être plus tôt que $end
-        if ($start >= $end) throw new Exception("Start $start_str must be earlier than end $end_str.");
+        $start_str = $start->format("Y-m-d H:i:s") ; $end_str = $new_end->format("Y-m-d H:i:s");
+        // $start doit être plus tôt que ou égal à $end
+        if ($start > $new_end) throw new Exception("Start $start_str must be earlier than end $end_str.");
 
         // Récupération des constantes depuis la base de données
         $duree = Constante::interval('duree_reservation', 'PTM');
@@ -235,18 +267,26 @@ class PlanningController extends Controller
         $array = []; // Initialiser la liste à créer
         // On itère entre $start et $end, créant une entrée dans la liste tous les $interval
         // On veut aller jusqu'à $end+$duree pour que les ["allow"] en fin de listes soient vrais
-        for ($now = clone $start ; $now < date_add(clone $end, $duree) ; $now = date_add($now, $interval)) {
+        for ($current = clone $start; 
+             $current <= date_add(clone $new_end, $duree);
+             $current = date_add($current, $interval))
+        {
+            // Empêcher de sélectionner un créneau hors bornes
+            if ($end === null && $current < $early) continue;
+            if ($end === null && $late < $current) continue;
+
             // Obtenir le planning qui gère $now
-            $now_str = $now->format("Y-m-d H:i:s");
-            $planning = Planning::where("planning_debut", "<=", $now_str)
-                ->where("planning_fin", ">", $now_str)->get()->first();
+            $current_str = $current->format("Y-m-d H:i:s");
+            
+            $planning = Planning::where("planning_debut", "<=", $current_str)
+                ->where("planning_fin", ">", $current_str)->get()->first();
             // S'il est nul (n'existe pas), cela veut dire que le restaurant est fermé (0)
             $max = $planning ? $planning->planning_couverts : 0;
             // Calculer le nombres de places réservées à l'instant $now
-            $res = PlanningController::comptePlacesPrises($now, $duree);
+            $res = PlanningController::comptePlacesPrises($current, $duree);
             // Enregistrer les données et les ajouter à la liste
             $array[] = [
-                "datetime" => $now_str, "maximum" => $max,
+                "datetime" => $current_str, "maximum" => $max,
                 "booked" => $res, "free" => $max - $res, "allow" => 0
             ];
         }
@@ -263,7 +303,7 @@ class PlanningController extends Controller
 
         // Les ["allow"] ont étés créés, on s'assure de respecter l'interval $start - $end
         $array = array_slice($array, 0, -$creneaux);
-
+        
         // Pas besoins de tronquer ; on rend le résultat
         if ($filter === null || $filter === false) return $array;
 
@@ -317,7 +357,7 @@ class PlanningController extends Controller
                     
             // Même chose pour $end et $fin
             if ((!array_key_exists($fin, $jours) || $couverts > $jours[$fin])
-                && (!$end || DateTime::createFromFormat("Y-m-d", $fin <= $end)))
+                && (!$end || DateTime::createFromFormat("Y-m-d", $fin) <= $end))
                     $jours[$fin] = $couverts;
         }
         return $jours;

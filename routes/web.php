@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PlanningController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\VitrineController;
 use App\Models\Constante;
 use App\Models\Langue;
@@ -59,13 +60,7 @@ Route::get('/api/free/{nb?}/{date?}', function($nb = null, $date = null) {
         throw new Exception("Nb $nb cannot be higher than Const 'reservation_personnes_max'");
 
     if ($date === null) {
-        // Déterminer si l'avance est simple ou multiplicative
-        $avance = Constante::key('reservation_temps_min');
-        // Créer les bornes pour la résolution du planning
-        $start = (new DateTime())->add($avance);
-        if ($nb && Constante::key('avance_multiplicative'))
-           for ($i=1 ; $i<$nb ; $i++) $start->add($avance);
-        $end = (new DateTime())->add(Constante::key('reservation_temps_max'));
+        [$start, $end] = PlanningController::bornesTZ($nb);
         return array_keys(PlanningController::calendrier($nb, $start, $end));
     }
     return array_map(
@@ -76,6 +71,6 @@ Route::get('/api/free/{nb?}/{date?}', function($nb = null, $date = null) {
             null, $nb), 'datetime'));
 })->name('api.free');
 
-Route::post('/api/book', function(){
-    //
-})->name('api.book');
+Route::post('/api/book',
+    [ReservationController::class, 'reserver']
+)->name('api.book');

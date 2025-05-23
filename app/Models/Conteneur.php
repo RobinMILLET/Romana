@@ -51,13 +51,16 @@ class Conteneur extends Model
         // Tester si c'est un formulaire
         $form = $this->formulaire($langue_id);
         if ($form) {
-            if(view()->exists($form)) return $form;
+            // On teste si la vue existe
+            if (view()->exists($form)) return $form;
+            // Sinon, on cherche en une langue plus commune
         }
         else {
             $contenu = $this->Contenu()->firstWhere('langue_id', $langue_id);
             // Obtenir le contenu du texte en langue $langue_id
             if ($contenu) return $contenu->contenu_texte;
             // else TODO: Appeller l'API de traduction et créer le texte ici
+            // Si pas allez de crédits, on passe à la suite aka autre langue
         }
         // S'il n'existe pas, fallback en anglais
         if ($langue_id >= 2) return $this->obtenirContenuTraduit(1);
@@ -69,9 +72,11 @@ class Conteneur extends Model
     }
 
     public function formulaire($langue_id){
+        // Si ne ressemble pas à '<form#___>', on abandonne
         if (!preg_match("/^<form#[a-z]+>$/", $this->conteneur_texte)) return null;
+        // On extrait le nom de la balise
         $nom = substr($this->conteneur_texte, 6, strlen($this->conteneur_texte)-7);
-        $code = Langue::find($langue_id)->langue_code;
-        return "Forms.".$nom."_".$code;
+        $code = Langue::find($langue_id)->langue_code; // Le code de langue
+        return "Forms.".$nom."_".$code; // Et on renvoie le nom (théorique) de la vue
     }
 }
