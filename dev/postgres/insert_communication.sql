@@ -71,11 +71,12 @@ INSERT INTO police (police_id, police_libelle, police_texte) VALUES
     PAGE
 */ --------------------------------
 
-INSERT INTO traductible (traductible_id) VALUES
+INSERT INTO traductible (traductible_id) VALUES (0),
 (default),(default),(default),(default),
 (default),(default),(default),(default);
 
 INSERT INTO page (page_id, page_ordre, page_route) VALUES
+(0, 0, 'reservation'),
 (1, 1, 'home'), (2, 2, 'about'), (3, 3, 'event'), (4, 4, 'hours'),
 (5, 5, 'menu'), (6, 6, 'book'), (7, 7, 'rating'), (8, 8, 'contact');
 
@@ -100,9 +101,9 @@ conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_
 1, 1, 5, NULL, 'ffffffff', NULL, NULL, NULL, NULL, '0px', TRUE),
 ('2Accueil2', 1, 1, NULL, NULL,
 2, 1, 5, '00000080', 'ffffffff', NULL, 'max(40vw,300px)', NULL, '00000080', '15px', TRUE),
-('3Accueil3', 1, NULL, NULL, '### Bienvenue à La Romana\nPlongez dans une ambiance chaleureuse et dégustez une cuisine italienne authentique :\n- Pizzas au feu de bois\n- Pâtes fraîches faites maison\n- Desserts gourmands et raffinés\n\nNous vous accueillons avec le sourire, midi et soir.',
+('3Accueil3', 1, NULL, NULL, '### Bienvenue à La Romana\nPlongez dans une ambiance chaleureuse et dégustez une cuisine italienne authentique :\n- Pizzas au feu de bois\n- Pâtes fraîches faites maison\n- Desserts gourmands et raffinés\nNous vous accueillons avec le sourire, midi et soir.',
 2, 2, 4, 'ffffffff', 'ffffffcc', '00000022', 'max(40vw,300px)', '20px 30px 20px 30px', NULL, '15px', TRUE),
-('4Accueil4', 1, 2, 3, '#### Réservez une table dès maintenant !\n📞 04 50 00 00 00\n💬 Ou utilisez notre formulaire de réservation.',
+('4Accueil4', 1, 2, 3, '#### Réservez une table dès maintenant !\n📞 04 50 00 00 00\n💬 Ou utilisez notre [formulaire de réservation](/book).',
 3, 1, 2, NULL, 'ff6633ff', '000000aa', NULL, '25px', NULL, '8px', TRUE);
 
 
@@ -166,8 +167,21 @@ INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
 INSERT INTO conteneur (conteneur_libelle, page_id, photo_id, police_id, conteneur_texte,
 conteneur_ligne, conteneur_colonne, conteneur_aligne, conteneur_bordure, conteneur_couleur,
 conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_rayon, conteneur_visible) VALUES
-('9Reserv1', 6, NULL, 1, '<form#reservation>',
-1, 1, 2, '33333333', 'ffffffff', NULL, '75vw', '5vw 10vw', NULL, '0 px', TRUE);
+('9Reserv1', 6, NULL, 18, '# Enregistrer ou consulter une réservation',
+1, 1, 5, NULL, 'ffffffff', NULL, NULL, NULL, NULL, '0px', TRUE),
+('10Reserv2', 6, NULL, 1, '<form#reserver>',
+2, 1, 2, NULL, 'ffffffff', NULL, '25vw', '1vw', NULL, '0 px', TRUE),
+('11Reserv3', 6, NULL, NULL, '### Utilisez notre système de réservation en ligne pour vous garantir une place !\nParfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.\n\nChoisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !\n\n*Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en [nous constactant](/contact)*.',
+2, 2, 2, '55555555', 'ffffffff', NULL, 'max(30vw, 450px)', '2.5vw 1vw', NULL, '0 px', TRUE),
+('12Reserv4', 6, NULL, 1, '<form#trouver>',
+2, 3, 2, NULL, 'ffffffff', NULL, '25vw', '1vw', NULL, '0 px', TRUE);
+
+INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
+(0, 9, '<h1>Enregistrer ou consulter une réservation</h1>'),
+(0, 11, '<h3>Utilisez notre système de réservation en ligne pour vous garantir une place !</h3><p>Parfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.<br><br>Choisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !<br><br><i>Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en <a href="/contact">nous constactant</a></i>.</p>'),
+
+(1, 9, '<h1>Book or modify a reservation</h1>'),
+(1, 11, '<h3>Use our online reservation system to garantee yourself a spot!</h3><p>Sometimes victim of its own success, our restaurant might not always be able to meet the popularity demands.<br><br>Choose a time slot in advance and relax ; We''ve got you covered!<br><br><i>If you forgot your personnal information or your reservation number, you''ll need to ask for help and <a href="/contact">contact us</a></i>.</p>');
 
 /* --------------------------------
     PAGE 8 : Contact
@@ -177,19 +191,35 @@ INSERT INTO conteneur (conteneur_libelle, page_id, photo_id, police_id, conteneu
 conteneur_ligne, conteneur_colonne, conteneur_aligne, conteneur_bordure, conteneur_couleur,
 conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_rayon, conteneur_visible)
 VALUES
-('10Contact1', 8, NULL, 18, '# Nous contacter',
+('13Contact1', 8, NULL, 18, '# Nous contacter',
 1, 1, 5, NULL, 'ffffffff', NULL, NULL, NULL, NULL, '0px', TRUE),
-('11Contact2', 8, NULL, NULL,
+('14Contact2', 8, NULL, NULL,
 '### 📞 Téléphone\n**04 50 00 00 00**\n\n### ✉️ Email\n**contact@laromana.fr**\n\n### 📍 Adresse\n12 rue de la Pasta, 74000 Annecy',
 2, 1, 4, NULL, 'ffffffdd', '00000022', '30vw', '20px', NULL, '10px', TRUE),
-('12Contact3', 8, NULL, NULL, '<googlemap/>',
+('15Contact3', 8, NULL, NULL, '<googlemap/>',
 2, 2, 5, NULL, 'ffffffdd', '00000022', '30vw', '20px', NULL, '10px', TRUE);
 
 INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
-(0, 10, '<h1>Nous contacter</h1>'),
-(0, 11, '<h3>📞 Téléphone</h3><p><b>04 50 00 00 00</b></p><h3>✉️ Email</h3><p><b>contact@laromana.fr</b></p><h3>📍 Adresse</h3><p>12 rue de la Pasta, 74000 Annecy</p>'),
-(0, 12, '<googlemap/>'),
+(0, 13, '<h1>Nous contacter</h1>'),
+(0, 14, '<h3>📞 Téléphone</h3><p><b>04 50 00 00 00</b></p><h3>✉️ Email</h3><p><b>contact@laromana.fr</b></p><h3>📍 Adresse</h3><p>12 rue de la Pasta, 74000 Annecy</p>'),
+(0, 15, '<googlemap/>'),
 
-(1, 10, '<h1>Contact us</h1>'),
-(1, 11, '<h3>📞 Phone</h3><p><b>+33 4 50 00 00 00</b></p><h3>✉️ Email</h3><p><b>contact@laromana.fr</b></p><h3>📍 Address</h3><p>12 rue de la Pasta, 74000 Annecy</p>'),
-(1, 12, '<googlemap/>');
+(1, 13, '<h1>Contact us</h1>'),
+(1, 14, '<h3>📞 Phone</h3><p><b>+33 4 50 00 00 00</b></p><h3>✉️ Email</h3><p><b>contact@laromana.fr</b></p><h3>📍 Address</h3><p>12 rue de la Pasta, 74000 Annecy</p>'),
+(1, 15, '<googlemap/>');
+
+/* --------------------------------
+    PAGE 0 : Consultation Réservation
+*/ --------------------------------
+
+INSERT INTO conteneur (conteneur_libelle, page_id, photo_id, police_id, conteneur_texte,
+conteneur_ligne, conteneur_colonne, conteneur_aligne, conteneur_bordure, conteneur_couleur,
+conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_rayon, conteneur_visible) VALUES
+('afficher1', 0, NULL, NULL, '<form#afficher1>',
+1, 1, 5, NULL, 'ffffffff', NULL, NULL, NULL, NULL, '0px', TRUE),
+('afficher2', 0, NULL, NULL, '<form#afficher2>',
+2, 1, 2, NULL, 'ffffffff', NULL, NULL, '1vw', NULL, '0px', TRUE),
+('afficher3', 0, NULL, NULL, '<form#afficher3>',
+2, 2, 2, '55555555', 'ffffffff', NULL, NULL, '1vw', NULL, '0px', TRUE),
+('afficher4', 0, NULL, NULL, '<form#afficher4>',
+2, 3, 2, NULL, 'ffffffff', NULL, NULL, '1vw', NULL, '0px', TRUE);

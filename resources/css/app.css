@@ -23,6 +23,10 @@ header {
     color: red;
 }
 
+.green {
+    color: green;
+}
+
 .g-recaptcha {
     width: fit-content;
     margin: 1px;

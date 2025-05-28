@@ -152,7 +152,7 @@ CREATE TABLE reservation (
     reservation_commentaire VARCHAR(512) NULL,
     reservation_creation TIMESTAMP NOT NULL DEFAULT now(),
     reservation_horaire TIMESTAMP NOT NULL,
-    reservation_anonymiser BOOLEAN NOT NULL DEFAULT FALSE,
+    reservation_anonymiser TIMESTAMP NULL,
     CONSTRAINT fk_reservation_statut
         FOREIGN KEY (statut_id)
         REFERENCES statut(statut_id)
@@ -193,6 +193,7 @@ CREATE INDEX ix_reservation_nom ON reservation (reservation_nom);
 CREATE INDEX ix_reservation_prenom ON reservation (reservation_prenom);
 CREATE INDEX ix_reservation_telephone ON reservation (reservation_telephone);
 CREATE INDEX ix_reservation_horaire ON reservation (reservation_horaire);
+CREATE INDEX ix_reservation_anonymiser ON reservation (reservation_anonymiser);
 CREATE UNIQUE INDEX ix_statut_id ON statut (statut_id);
 CREATE UNIQUE INDEX ix_typepermission_id ON typepermission (typepermission_id);
 CREATE UNIQUE INDEX ix_typepermission_clef ON typepermission (typepermission_clef);

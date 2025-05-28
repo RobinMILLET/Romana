@@ -8,7 +8,7 @@ use App\Models\Langue;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function(){
-    //
+    //PlanningController::generePlanning(new DateTime("-1 day"), new DateTime("+2 month"));
 })->name('test');
 
 Route::get('/', function(){
@@ -39,12 +39,17 @@ Route::get('/contact', function(){
     return VitrineController::index(8);
 })->name('contact');
 
-
 Route::get('/api/lang/{langue_id}', function($langue_id){
     $lang = Langue::find($langue_id); // Trouver la langue
     if ($lang) session(['locale' => $lang]); // Si trouvée, mettre à jour la session
     return redirect()->back(); // Redirection en arrière
 })->name('api.lang');
+
+Route::get('/display', function() {
+    $reservation = session('reservation');
+    if ($reservation === null) return redirect()->route('book');
+    return VitrineController::index(reservation: $reservation);
+})->name('display');
 
 Route::get('/api/const', function(){
     // Les clés définies dans $keys seront donc accessible publiquement en lecture
@@ -74,3 +79,15 @@ Route::get('/api/free/{nb?}/{date?}', function($nb = null, $date = null) {
 Route::post('/api/book',
     [ReservationController::class, 'reserver']
 )->name('api.book');
+Route::post('/api/find',
+    [ReservationController::class, 'trouver']
+)->name('api.find');
+Route::post('/api/modifinfo',
+    [ReservationController::class, 'modifinfo']
+)->name('api.modifinfo');
+Route::post('/api/modifhoraire',
+    [ReservationController::class, 'modifhoraire']
+)->name('api.modifhoraire');
+Route::post('/api/annulation',
+    [ReservationController::class, 'annulation']
+)->name('api.annulation');

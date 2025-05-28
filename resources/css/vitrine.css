@@ -28,10 +28,10 @@ section > * {
   align-items: stretch;
 }
 
-.conteneur h1 { font-size: 3rem; font-weight: bold; margin-bottom: 0.25em; }
-.conteneur h2 { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.2em; }
-.conteneur h3 { font-size: 2rem; font-weight: bold; margin-bottom: 0.15em; }
-.conteneur h4 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.1em; }
+.conteneur h1 { font-size: 3rem; font-weight: bold; margin-bottom: 0.35em; }
+.conteneur h2 { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.3em; }
+.conteneur h3 { font-size: 2rem; font-weight: bold; margin-bottom: 0.25em; }
+.conteneur h4 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.2em; }
 .conteneur p { margin-bottom: 0.5em; line-height: 1.5; }
 .conteneur ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5em; }
 .conteneur ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5em; }
@@ -78,6 +78,13 @@ button:not(:disabled):active {
   margin-right: auto;
 }
 
+.conteneur input, .conteneur select, .conteneur textarea, .conteneur form p {
+  display: block;
+  margin: 5px 5px 20px 5px;
+  padding: 2.5px 5px;
+  width: min(90vw, 300px);
+}
+
 .conteneur input, .conteneur select, .conteneur textarea {
   display: block;
   margin: 5px 5px 20px 5px;
@@ -86,4 +93,20 @@ button:not(:disabled):active {
   background-color: #111;
   border: 1px solid #555;
   color: white
+}
+
+.conteneur .code {
+  font-family: 'monospace';
+  background-color: #111;
+  color: #eee;
+}
+
+input[type="number"]:disabled {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]:disabled::-webkit-inner-spin-button, 
+input[type=number]:disabled::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
 }

@@ -36,7 +36,12 @@ INSERT INTO constante VALUES
 'boolean', NULL, NULL, 'false'),
 
 ('captcha_reservation',
-'Active ou désactive le CAPTCHA sur la réservation.',
+'Active ou désactive le CAPTCHA sur la création de réservation.',
+NULL,
+'boolean', NULL, NULL, 'false'),
+
+('captcha_consultation',
+'Active ou désactive le CAPTCHA sur la consultation de réservation.',
 NULL,
 'boolean', NULL, NULL, 'false'),
 

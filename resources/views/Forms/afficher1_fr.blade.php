@@ -1,0 +1,2 @@
+<h1>Votre réservation N° <span class="code">{{ $reservation->reservation_num }}</span> au <span class="code">{{ $reservation->formattedPhone() }}</span></h1>
+<p><i>Conservez ces informations pour consulter, modifier ou annuler votre réservation dans le futur.</i></p>

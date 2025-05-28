@@ -2,6 +2,8 @@
   use App\Models\Constante;
 @endphp
 
+<h3>Enregistrer une réservation</h3>
+&nbsp;
 <form action="{{ route('api.book') }}" method="POST">
     @csrf
     <label>Nom de famille
@@ -18,7 +20,7 @@
     </label>
 
     <label>Nombre de personnes
-        <input type="number" name="amount" id="nbInput" min="1" required>
+        <input type="number" name="amount" id="nbInput" min="1" value="1" required>
     </label>
 
     <label>Date de la réservation
@@ -49,7 +51,7 @@
 
     @if (session('errors'))
         @if (session('errors')->first('SlotTaken'))
-            <p class="red">Le créneau viens d'être réservé !</p>
+            <p class="red">Le créneau choisis viens d'expirer !</p>
         @elseif (session('errors')->first('SQL'))
             <p class="red">Erreur : Votre réservation n'a pas pu être créée...</p>
         @endif

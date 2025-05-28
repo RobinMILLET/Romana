@@ -2,6 +2,8 @@
   use App\Models\Constante;
 @endphp
 
+<h3>Book a reservation</h3>
+&nbsp;
 <form action="{{ route('api.book') }}" method="POST">
     @csrf
     <label>Last name
@@ -18,7 +20,7 @@
     </label>
 
     <label>Number of people
-        <input type="number" name="amount" id="nbInput" min="1" required>
+        <input type="number" name="amount" id="nbInput" min="1" value="1" required>
     </label>
 
     <label>Date of the reservation
@@ -49,7 +51,7 @@
 
     @if (session('errors'))
         @if (session('errors')->first('SlotTaken'))
-            <p class="red">The time slot just got taken!</p>
+            <p class="red">The chosen time slot just expired!</p>
         @elseif (session('errors')->first('SQL'))
             <p class="red">Error : Your reservation coul not be created...</p>
         @endif

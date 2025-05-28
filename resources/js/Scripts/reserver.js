@@ -1,12 +1,34 @@
+// Formatteur automatique de date utilisant la langue de la page
+const formatter = new Intl.DateTimeFormat(document.documentElement.lang, {
+  weekday: "long", year: "numeric", month: "long", day: "numeric"
+});
+
+function addDate(date, selected = false) {
+  const opt = document.createElement('option');
+  opt.value = date; // YYYY-MM-DD
+  opt.textContent = formatter.format(new Date(date));
+  opt.classList.add("dt");
+  if (selected) opt.selected = true
+  dtInput.appendChild(opt);
+}
+
+function addHour(heure, selected = false) {
+  const opt = document.createElement('option');
+  opt.value = heure; // hh:mm:ss
+  opt.textContent = heure.slice(0, 5); // hh:mm
+  opt.classList.add("tm");
+  if (selected) opt.selected = true
+  tmInput.appendChild(opt);
+}
+
+window.addDate = addDate;
+window.addHour = addHour;
+
 document.addEventListener('DOMContentLoaded', () => {
   const nbInput = document.getElementById('nbInput');
+  if (nbInput == null) return;
   const dtInput = document.getElementById('dtInput');
   const tmInput = document.getElementById('tmInput');
-
-  // Formatteur automatique de date utilisant la langue de la page
-  const formatter = new Intl.DateTimeFormat(document.documentElement.lang, {
-    weekday: "long", year: "numeric", month: "long", day: "numeric"
-  });
 
   let maxNb = 25;
   let currDate = null;
@@ -18,13 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
   .then(data => {
     maxNb = data.reservation_personnes_max || maxNb;
     nbInput.max = maxNb;
-    nbInput.value = 1;
+    if (nbInput.value > maxNb) nbInput.value = maxNb;
+    if (nbInput.value < 1) nbInput.value = 1;
     updateDates();
   });
 
   nbInput.addEventListener('change', () => {
     let val = parseInt(nbInput.value) || 1;
-    if(val > maxNb) {
+    if (val > maxNb) {
       val = maxNb;
       nbInput.value = val;
     } else if(val < 1) {
@@ -58,11 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(r => r.json())
     .then(dates => {
       dates.forEach(date => {
-        const opt = document.createElement('option');
-        opt.value = date; // YYYY-MM-DD
-        opt.textContent = formatter.format(new Date(date));
-        opt.classList.add("dt");
-        dtInput.appendChild(opt);
+        addDate(date);
       });
       if (dates.includes(currDate)) {
         // Si toujours valide, on remet le choix utilisateur
@@ -98,11 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(r => r.json())
     .then(heures => {
       heures.forEach(heure => {
-        const opt = document.createElement('option');
-        opt.value = heure; // hh:mm:ss
-        opt.textContent = heure.slice(0, 5); // hh:mm
-        opt.classList.add("tm");
-        tmInput.appendChild(opt);
+        addHour(heure);
       });
       if (heures.includes(currTime)) {
         // Si toujours valide, on remet le choix utilisateur

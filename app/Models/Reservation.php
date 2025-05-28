@@ -28,4 +28,15 @@ class Reservation extends Model
     public function Statut() {
         return $this->hasOne(Statut::class, "statut_id", "statut_id")->get()->first();
     }
+
+    public function formattedPhone() {
+        $final = "+";
+        $space_after = [1, 2, 4, 6, 8];
+        for ($i = 0 ; $i < strlen($this->reservation_telephone) ; $i ++) {
+            $final .= $this->reservation_telephone[$i];
+            if (array_search($i, $space_after) !== false)  $final .= " ";
+        }
+        if (substr($final, 0, 3) == "+33") $final = "0".substr($final, 4);
+        return $final;
+    }
 }
