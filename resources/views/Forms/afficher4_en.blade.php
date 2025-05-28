@@ -4,15 +4,15 @@
     $horaire = DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire);
 @endphp
 
-<h3>Annulation</h3>
+<h3>Cancellation</h3>
 
 <p>
-    Vous avez changé d'avis ou ne pourrez pas être présent ?
+    You changed your mind or won't be able to honor you time slot?
     <br><br>
-    Nous regrettons de vous voir partir, mais les imprévus arrivent, et nous comprennons.
+    We regret to see you go, but life happens and we understand.
     <br><br>
-    Néanmoins, nous vous remercions d'avance, de la part des clients et du personnel,
-    de signaler votre abscence au plus tôt afin de faciliter notre travail.
+    However, we thank you in advance, on behalf of all clients and staff,
+    for signaling your ascence as soon as possible to make our service easier.
 </p>
 <br><br>
 
@@ -24,15 +24,15 @@
     <input type="hidden" name="num" value="{{ $reservation->reservation_num}}">
     <input type="hidden" name="phone" value="{{ $reservation->reservation_telephone ?? ''}}">
 
-    <button type="submit">Annuler ma réservation</button>
+    <button type="submit">Cancel my reservation</button>
 
     @if (session('errors'))
         <div>
         @if (session('errors')->first('Success3'))
-            <p class="green">La réservation à bien été annulée.</p>
+            <p class="green">Reservation successfully cancelled.</p>
         @elseif (session('errors')->first('NotFound3') || session('errors')->first('Cancelled3') ||
                 session('errors')->first('TooLate3') || session('errors')->first('SQL3'))
-            <p class="red">Erreur : Votre réservation n'a pas pu être modifiée...</p>
+            <p class="red">Error : Your reservation could not be cancelled...</p>
         @endif
         </div>
     @endif
@@ -44,12 +44,12 @@
     <i>
         @if ((int)$reservation->statut_id == 6)
             @if (session('errors') && session('errors')->first('Success3'))
-                <p class="green">La réservation à bien été annulée.</p>
+                <p class="green">Reservation successfully cancelled.</p>
             @else
-                Cette réservation est déjà annulée.
+                This reservation has already been cancelled.
             @endif
         @else
-            Vous ne pouvez pas annuler cette réservation.
+            You cannot cancel this reservation.
         @endif
     </i>
 </p>

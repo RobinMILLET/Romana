@@ -30,7 +30,7 @@ const computedImage = computed(() => {
 
   const style = {
     borderRadius: c.conteneur_rayon || '0px',
-    maxWidth: c.conteneur_largeur || '100%',
+    width: c.conteneur_largeur || '100%',
     justifyContent: computeJustify(c.conteneur_aligne),
     alignItems: computeAlign(c.conteneur_aligne),
   }
