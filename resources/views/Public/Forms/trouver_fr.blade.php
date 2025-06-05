@@ -2,7 +2,7 @@
   use App\Models\Constante;
 @endphp
 
-<h3>Consulter une réservation</h3>
+<h3>Trouver une réservation</h3>
 &nbsp;
 
 <form action="{{ route('api.find') }}" method="POST">
@@ -25,12 +25,12 @@
 
       <button type="submit" disabled onmouseenter='submit_enter(this)' onmouseleave='submit_leave()'>Envoyer</button>
     @else
-      <button type="submit">Envoyer</button>
+      <button type="submit">Valider</button>
     @endif
 
     @if (session('errors'))
         @if (session('errors')->first('NotFound'))
-            <p class="red">Nous n'avons pas trouvé la réservation correspondante</p>
+            <p class="red">Nous n'avons pas trouvé la réservation correspondante.</p>
         @endif
     @endif
 </form>

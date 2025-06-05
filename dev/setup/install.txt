@@ -10,6 +10,8 @@ sudo apt-get install php
 sudo apt-get install postgresql postgresql-contrib
 sudo apt-get install php-pgsql
 sudo apt-get install php-xml
+sudo apt-get install php-curl
+sudo apt-get install php-intl
 sudo apt-get install screen
 sudo apt-get install git
 sudo apt-get install gh
@@ -33,6 +35,9 @@ php artisan key:generate
 sudo phpenmod pgsql pdo_pgsql
 composer install
 composer require laravel/breeze --dev
+composer require twilio/sdk
+composer require ext-intl
+composer update
 php artisan breeze:install vue
 npm install
 npm run dev

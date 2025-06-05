@@ -1,1 +1,1 @@
-screen -dmS 'RomanaNode:7437' bash -c "npm run dev";
+screen -dmS 'RomanaNode:7437' bash -c "cd ~/Romana ; npm run dev";

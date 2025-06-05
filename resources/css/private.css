@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+    min-width: 500px;
+    width: 100%;
+    background-color: #111;
+    color: white;
+    font-size: 15px;
+}
+
+#login-logo {
+    height: min(10vh, 10vw);
+    aspect-ratio: 1;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+header {
+    font-family: Felipa, serif;
+}
+
+.logo {
+    height: 50px;
+    aspect-ratio: 1;
+    margin: 0;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: greenyellow;
+}
+
+#burger {
+  display: block;
+  font-size: 2rem;
+  cursor: pointer;
+  margin: 0 1rem;
+}
+
+#menu {
+  display: none;
+  border-radius: 5px;
+  border: 0.25rem #111 solid;
+  background-color: black;
+  transform: translate(-110%, 0);
+  flex-direction: column;
+  position: absolute;
+  width: fit-content;
+  padding: 0.5rem;
+}
+
+#menu-toggle {
+    display: none;
+}
+
+#menu-toggle:checked~#menu {
+  display: flex;
+}
+
+#menu nav, #menu nav a, #menu nav s {
+  text-wrap: nowrap;
+  display: block;
+  width: 100%;
+}
+
+#menu nav {
+  padding: 0.5rem;
+}
+
+#menu .route:hover {
+  background-color: #fff1;
+}
+
+#menu nav s {
+  opacity: 0.5;
+}

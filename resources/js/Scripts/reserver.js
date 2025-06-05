@@ -30,30 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const dtInput = document.getElementById('dtInput');
   const tmInput = document.getElementById('tmInput');
 
-  let maxNb = 25;
   let currDate = null;
   let currTime = null;
 
-  // Récupération du max de personnes (/api/const)
-  fetch('/api/const')
-  .then(r => r.json())
-  .then(data => {
-    maxNb = data.reservation_personnes_max || maxNb;
-    nbInput.max = maxNb;
-    if (nbInput.value > maxNb) nbInput.value = maxNb;
-    if (nbInput.value < 1) nbInput.value = 1;
-    updateDates();
-  });
+  updateDates();
 
   nbInput.addEventListener('change', () => {
-    let val = parseInt(nbInput.value) || 1;
-    if (val > maxNb) {
-      val = maxNb;
-      nbInput.value = val;
-    } else if(val < 1) {
-      val = 1;
-      nbInput.value = val;
-    }
     updateDates();
   });
 

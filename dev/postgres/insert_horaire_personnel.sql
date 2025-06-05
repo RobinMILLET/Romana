@@ -19,7 +19,7 @@ ALTER SEQUENCE sq_personnel RESTART;
     DELETE
 */ --------------------------------
 
-DELETE FROM planning;
+--DELETE FROM planning;
 DELETE FROM horaire;
 DELETE FROM fermeture;
 DELETE FROM reservation;
@@ -34,16 +34,14 @@ DELETE FROM typepermission;
 
 INSERT INTO horaire (horaire_date_debut, horaire_date_fin,
 horaire_temps_debut, horaire_temps_fin, horaire_couverts) VALUES
-(1, 31, '12:00:00', '14:00:00', 75),
-(1, 31, '19:00:00', '22:00:00', 75),
-(1, 31, '19:00:00', '23:00:00', 100);
+(1, 31, '12:00:00', '14:00:00', 50),
+(1, 31, '19:00:00', '22:00:00', 50),
+(1, 31, '18:00:00', '22:00:00', 50);
 
 INSERT INTO jour (horaire_id, jour_id) VALUES
 (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6),
-(2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6);
-
-INSERT INTO mois (horaire_id, mois_id) VALUES
-(3, 7), (3, 8);
+(2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6),
+(3, 7);
 
 /* --------------------------------
     PERSONNEL
@@ -51,6 +49,7 @@ INSERT INTO mois (horaire_id, mois_id) VALUES
 
 INSERT INTO typepermission (typepermission_id, typepermission_clef,
 typepermission_libelle, typepermission_description) VALUES
+(0, 'LOGIN', 'Connexion', 'A le droit de se connecter à l''interface du personnel.'),
 (1, 'SUPER', 'Superutilisateur', 'Octroie tous les droits au porteur, peut uniquement être géré par un autre Superutilisateur. Attention, ce rôle est dangereux !'),
 (2, 'ADMIN', 'Administrateur', 'Donne le droit de modifier les constantes, les horaires d''ouverture et les infos importantes.'),
 (3, 'MANAG', 'Management', 'Permet de créer et supprimer des utilisateurs, de modifier les permissions et de réinitialiser les mots de passes.'),
@@ -61,33 +60,34 @@ typepermission_libelle, typepermission_description) VALUES
 (8, 'ALLER', 'Allergies', 'Chargé de signaler la présence d''allergènes dans les plâts.'),
 (9, 'RESER', 'Reservation', 'Peut consulter et gérer les réservations, ainsi qu''en créer de nouvelles.'),
 (10, 'SERVE', 'Service', 'Accès en lecure seule sur les réservations (pour le service en salle).'),
-(11, 'HISTO', 'Historique', 'Peut consulter l''historique des actions.');
+(11, 'HISTO', 'Historique', 'Peut consulter l''historique des actions.'),
+(12, 'PERSO', 'Individuel', 'Peut modifier ou supprimer son compte, et changer le mot de passe même s''il est encore valide');
 
-INSERT INTO personnel (personnel_nom, personnel_mdp, personnel_mdp_estdefaut, personnel_mdp_changement) VALUES
-('Robin', '$2y$10$qonZ9CVleo46t.7gwLVMFOSCwDGtZ/PuZgXZ6oKQSuMxdAuli7ZA6', FALSE, now()), -- Robin
-('Main', '$2y$10$sklPKLJsHHU7bq5PGZuWxO3YEYlNhJmidJclpaF0F1QB0YBHd7kKO', FALSE, now()), -- Main
-('User', '$2y$10$PS/EohdIpQVyF8.lTCtKb.NJdwq62FHq9/YtlJVthKFZxsqyL2RzW', TRUE, now()), -- mdp
-('Serv', '$2y$10$TgbvJ3sbkOtxYVUhaqTnMuzW5w0uP3fUW0vrnD7Uq297ZI1L7SeKK', FALSE, now()); -- Serv
+INSERT INTO personnel (personnel_nom, personnel_mdp) VALUES
+('Robin', '$2y$10$qonZ9CVleo46t.7gwLVMFOSCwDGtZ/PuZgXZ6oKQSuMxdAuli7ZA6'), -- Robin
+('Main', '$2y$10$sklPKLJsHHU7bq5PGZuWxO3YEYlNhJmidJclpaF0F1QB0YBHd7kKO'), -- Main
+('User', '$2y$10$PS/EohdIpQVyF8.lTCtKb.NJdwq62FHq9/YtlJVthKFZxsqyL2RzW'), -- mdp
+('Serv', '$2y$10$TgbvJ3sbkOtxYVUhaqTnMuzW5w0uP3fUW0vrnD7Uq297ZI1L7SeKK'); -- Serv
 
 INSERT INTO permission (personnel_id, typepermission_id) VALUES
 (1, 1),
-(2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 11),
-(3, 10), (3, 11),
-(4, 5), (4, 9), (4, 10), (4, 11);
+(2, 0), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 11), (2, 12),
+(3, 0), (3, 10), (3, 11), (3, 12),
+(4, 0), (4, 5), (4, 9), (4, 10), (4, 11);
 
 /* --------------------------------
     RESERVATION
 */ --------------------------------
 
 INSERT INTO statut (statut_id, statut_libelle, statut_hex) VALUES
-(1, 'En attente', 'cccccc'),    -- Blanc
-(2, 'En approche', '77cc77'),   -- Vert
-(3, 'En cours', 'cccc77'),      -- Jaune
-(4, 'En retard', 'cc7777'),     -- Rouge
-(5, 'Absent', 'cc77cc'),        -- Violet
-(6, 'Annulé', '777777'),        -- Noir
-(7, 'En salle', '77cccc'),      -- Cyan
-(8, 'Terminé', '7777cc');       -- Bleu
+(1, 'En attente', 'cccccc'),   -- Blanc
+(2, 'En approche', 'cccc77'),  -- Jaune
+(3, 'En cours', '77cc77'),     -- Vert
+(4, 'En retard', 'cc7777'),    -- Rouge
+(5, 'Absent', 'cc77cc'),       -- Violet
+(6, 'Annulé', '777777'),       -- Noir
+(7, 'En salle', '77cccc'),     -- Cyan
+(8, 'Terminé', '7777cc');      -- Bleu
 
 INSERT INTO reservation (statut_id, personnel_id, reservation_num,
 reservation_nom, reservation_prenom, reservation_telephone, reservation_personnes,

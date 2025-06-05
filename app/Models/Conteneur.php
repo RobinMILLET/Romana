@@ -78,6 +78,6 @@ class Conteneur extends Model
         // On extrait le nom de la balise
         $nom = substr($this->conteneur_texte, 6, strlen($this->conteneur_texte)-7);
         $code = Langue::find($langue_id)->langue_code; // Le code de langue
-        return "Forms.".$nom."_".$code; // Et on renvoie le nom (théorique) de la vue
+        return "Public.Forms.".$nom."_".$code; // Et on renvoie le nom (théorique) de la vue
     }
 }

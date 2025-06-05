@@ -4,7 +4,7 @@
     $horaire = DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire);
 @endphp
 
-<h3>Cancellation</h3>
+<h3>Cancel reservation</h3>
 
 <p>
     You changed your mind or won't be able to honor you time slot?
@@ -25,17 +25,6 @@
     <input type="hidden" name="phone" value="{{ $reservation->reservation_telephone ?? ''}}">
 
     <button type="submit">Cancel my reservation</button>
-
-    @if (session('errors'))
-        <div>
-        @if (session('errors')->first('Success3'))
-            <p class="green">Reservation successfully cancelled.</p>
-        @elseif (session('errors')->first('NotFound3') || session('errors')->first('Cancelled3') ||
-                session('errors')->first('TooLate3') || session('errors')->first('SQL3'))
-            <p class="red">Error : Your reservation could not be cancelled...</p>
-        @endif
-        </div>
-    @endif
 </form>
 
 @else
@@ -43,11 +32,7 @@
 <p>
     <i>
         @if ((int)$reservation->statut_id == 6)
-            @if (session('errors') && session('errors')->first('Success3'))
-                <p class="green">Reservation successfully cancelled.</p>
-            @else
-                This reservation has already been cancelled.
-            @endif
+            This reservation has already been cancelled.
         @else
             You cannot cancel this reservation.
         @endif

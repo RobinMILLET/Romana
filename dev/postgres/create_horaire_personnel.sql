@@ -90,8 +90,7 @@ CREATE TABLE personnel (
     personnel_nom VARCHAR(64) NOT NULL,
     personnel_creation TIMESTAMP NOT NULL DEFAULT now(),
     personnel_mdp CHAR(64) NOT NULL,
-    personnel_mdp_estdefaut BOOLEAN NOT NULL DEFAULT TRUE,
-    personnel_mdp_changement TIMESTAMP NOT NULL DEFAULT now()
+    personnel_mdp_change TIMESTAMP NULL
 );
 
 CREATE TABLE historique (

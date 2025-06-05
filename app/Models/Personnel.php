@@ -12,8 +12,7 @@ class Personnel extends Model
     protected $fillable = [
         'personnel_nom',
         'personnel_mdp',
-        'personnel_mdp_estdefaut',
-        'personnel_mdp_changement'
+        'personnel_mdp_change'
     ];
 
     public function Reservation() {

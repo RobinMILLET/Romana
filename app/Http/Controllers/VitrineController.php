@@ -5,10 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Constante;
 use App\Models\Conteneur;
 use App\Models\Langue;
+use App\Models\Page;
 use App\Models\Reservation;
 
 class VitrineController extends Controller
 {
+    public static function obtenirPagesTraduites() {
+        $langue = session('locale', Langue::find(0)); // Langue active sur le site
+        $pages = Page::where('page_id', '>', 0)->orderBy('page_ordre')->get(); // Obtenir les pages
+        // Obtenir les traductions depuis Traductible->Traduction->traduction_libelle
+        foreach ($pages as $page) {
+            $page->page_traduction_libelle = $page->obtenirTraduction($langue->langue_id);
+        }
+        return $pages;
+    }
+
     public static function index(int $page_id = 0, int $langue_id = null,
         Reservation $reservation = null, bool $public = true)
     {
@@ -35,10 +46,10 @@ class VitrineController extends Controller
         // Insérer les variables dans la vitrine
         $script = array_search($page_id, [0, 6]) !== false;
         $captcha = $page_id == 6 && (
-            Constante::key('captcha_reservation')||
-            Constante::key('captcha_reservation')
+            Constante::key('captcha_réservation')||
+            Constante::key('captcha_réservation')
         );
-        return view("Pages.vitrine", [
+        return view("Public.Pages.vitrine", [
             'lignes' => $lignes, 'textes' => $textes,
             'script' => $script, 'captcha' => $captcha,
             'reservation' => $reservation, 'public' => $public
@@ -54,6 +65,6 @@ class VitrineController extends Controller
         ] as $key => $value) { // On itère et on remplace tout
             $text = str_replace($key, $value, $text);
         }
-        return $text;
+        return ctype_space($text) ? '' : $text;
     }
 }

@@ -5,7 +5,20 @@ const props = defineProps({
   conteneur: {
     type: Object,
     required: true
+  },
+  notext: {
+    type: Boolean,
+    required: false,
+    default: false
   }
+})
+
+const computedClass = computed(() => {
+  var classes = "conteneur"
+
+  if (props.notext) classes += " notext natural"
+
+  return classes
 })
 
 const computedStyle = computed(() => {
@@ -27,6 +40,7 @@ const computedStyle = computed(() => {
 
 const computedImage = computed(() => {
   const c = props.conteneur
+  const notext = props.notext
 
   const style = {
     borderRadius: c.conteneur_rayon || '0px',
@@ -47,6 +61,13 @@ const computedImage = computed(() => {
     style.backgroundImage = `url('/photos/${c.conteneur_photo_url}')`
     style.backgroundSize = 'cover'
     style.backgroundPosition = 'center'
+    if (notext) {
+      var image = new Image()
+      image.src = `/photos/${c.conteneur_photo_url}`
+      var width = image.naturalWidth
+      var height = image.naturalHeight
+      style.aspectRatio = `${width} / ${height}`
+    }
   }
 
   return style
@@ -78,7 +99,7 @@ function computeAlign(aligne) {
 </script>
 
 <template>
-  <div class="conteneur" :style="computedImage">
+  <div :class="computedClass" :style="computedImage">
     <div :style="computedStyle">
       <slot></slot>
     </div>

@@ -28,14 +28,14 @@ class PlanningController extends Controller
     }
 
     public static function bornesTZ(int $nb = null) {
-        $avance = Constante::key('reservation_temps_min');
+        $avance = Constante::interval('réservation_temps_min');
         // Créer les bornes pour la résolution du planning
         $early = (PlanningController::modTZ())->add($avance);
         // Déterminer si l'avance est simple ou multiplicative
         if ($nb && Constante::key('avance_multiplicative'))
             // Et l'appliquer en utilisant $nb
             for ($i=1 ; $i<$nb ; $i++) $early->add($avance);
-        $late = (PlanningController::modTZ())->add(Constante::key('reservation_temps_max'));
+        $late = (PlanningController::modTZ())->add(Constante::interval('réservation_temps_max'));
         return array($early, $late); // On retourne les deux
         // [$early, $late] = PlanningController::bornesTZ($nb?);
     }
@@ -230,23 +230,31 @@ class PlanningController extends Controller
         PlanningController::nettoiePlanning();
     }
 
-    public static function comptePlacesPrises(DateTime $datetime, DateInterval $duree) {
+    public static function comptePlacesPrises(
+            DateTime $datetime, DateInterval $duree, array|int $filter = null) {
         // Retourne le nombre de place prises par les réservations à un moment donné,
         // sachant que une réservation bloque pendant $duree
-        return Reservation::whereBetween("reservation_horaire", [
+        $reservations = Reservation::whereBetween("reservation_horaire", [
             date_sub(clone $datetime, $duree)->format("Y-m-d H:i:s"),
-            $datetime->format("Y-m-d H:i:s")])->sum("reservation_personnes");
+            $datetime->format("Y-m-d H:i:s")]);
+        if ($filter !== null) { // Si le filtre existe
+            // On s'assure que c'est un array
+            if (!is_array($filter)) $filter = [$filter];
+            // Et on l'utilise pour récupérer unqiuement certaines réservations
+            $reservations = $reservations->whereIn('statut_id', $filter);
+        }
+        return $reservations->sum("reservation_personnes");
     }
 
     public static function crenaux(DateTime $start, DateTime $end = null,
-            int|bool $filter = null, DateInterval $interval = null) {
-        
+            int|bool $filter_nb = null, array $filter_statut = null,
+            DateInterval $interval = null) {
         if ($end === null) { // Si la fin n'est pas donnée,
             // on donne les disponibilités du jour entier
             $start = $start->setTime(0, 0, 0, 0);
             $new_end = date_add(clone $start, new DateInterval("P1D"));
             // Récupérer les bornes min et max de réservation
-            [$early, $late] = PlanningController::bornesTZ(is_int($filter) ? $filter : null);
+            [$early, $late] = PlanningController::bornesTZ(is_int($filter_nb) ? $filter_nb : null);
         }
         else $new_end = clone $end;
         
@@ -255,8 +263,8 @@ class PlanningController extends Controller
         if ($start > $new_end) throw new Exception("Start $start_str must be earlier than end $end_str.");
 
         // Récupération des constantes depuis la base de données
-        $duree = Constante::interval('duree_reservation', 'PTM');
-        if ($interval === null) $interval = Constante::interval('interval_reservation', 'PTM');
+        $duree = Constante::interval('duree_réservation', 'PTM');
+        if ($interval === null) $interval = Constante::interval('interval_réservation', 'PTM');
 
         // On transforme les deux intervales en int (secondes)
         $interval_secs = date_create('@0')->add($interval)->getTimestamp();
@@ -283,7 +291,7 @@ class PlanningController extends Controller
             // S'il est nul (n'existe pas), cela veut dire que le restaurant est fermé (0)
             $max = $planning ? $planning->planning_couverts : 0;
             // Calculer le nombres de places réservées à l'instant $now
-            $res = PlanningController::comptePlacesPrises($current, $duree);
+            $res = PlanningController::comptePlacesPrises($current, $duree, $filter_statut);
             // Enregistrer les données et les ajouter à la liste
             $array[] = [
                 "datetime" => $current_str, "maximum" => $max,
@@ -305,7 +313,7 @@ class PlanningController extends Controller
         $array = array_slice($array, 0, -$creneaux);
         
         // Pas besoins de tronquer ; on rend le résultat
-        if ($filter === null || $filter === false) return $array;
+        if ($filter_nb === null || $filter_nb === false) return $array;
 
         // Supprimer les x,0,0,x au début
         while (count($array) && $array[0]['maximum'] == 0 &&
@@ -316,12 +324,12 @@ class PlanningController extends Controller
             end($array)['booked'] == 0) array_pop($array);
 
         // Pas besoins de filtrer ; on rend le résultat
-        if ($filter === true) return $array;
+        if ($filter_nb === true) return $array;
 
         $new_array = []; // Initialiser la liste à rendre
         foreach ($array as $element) {
             // Si égal ou supérieur au filtre, on garde
-            if ($element["allow"] >= $filter) $new_array[] = $element;
+            if ($element["allow"] >= $filter_nb) $new_array[] = $element;
         }
         return $new_array;
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use DateInterval;
 use DateTime;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
@@ -72,7 +73,17 @@ class Constante extends Model
             case 'datetime': // Sous format 'Y-m-d H:i:s'
                 return DateTime::createFromFormat("Y-m-d H:i:s", $value);
             case 'interval': return new DateInterval($value); // Format 'P[T]xX'
-            default: throw new InvalidArgumentException("Type $type is not correct.");
+            default:
+                // Si c'est un csv avec type, on convertis la liste en type
+                if (str_starts_with($type, "csv|")) {
+                    $type = substr($type, 4);
+                    // On map la fonction decode() avec $valeur et $type
+                    return array_map(
+                        fn ($val) => Constante::decode($val, $type),
+                        explode(',', $value)
+                    );
+                }
+                throw new InvalidArgumentException("Type $type is not correct.");
         }
     }
 
@@ -91,31 +102,50 @@ class Constante extends Model
     }
 
     public static function checkOne(string $value_str, string $check, string $type) {
+        $type_no_csv = str_replace('csv|', '', $type);
         $array = [ // [symbol => [message, fonction]]
             ">=" => [" supérieur ou égal à ", fn($a,$b) => $a>=$b],
             "<=" => [" inférieur ou égal à ", fn($a,$b) => $a<=$b],
             ">" => [" supérieur à ", fn($a,$b) => $a>$b],
             "<" => [" inférieur à ", fn($a,$b) => $a<$b],
             "!" => [" différent de ", fn($a,$b) => $a!=$b],
-            "%" => [" multiple de ", fn($a,$b) => $b%$a==0],
-        ]; // On itère dans le tableau
+            "%" => [" un multiple de ", fn($a,$b) => $b%$a==0],
+            "L" => [" de longeur ", fn($a,$b) => count($a)==$b],
+        ];
+        // On itère dans le tableau
         foreach ($array as $symbol => [$msg, $fn]) {
             // Si le symbol correspond (attention à l'ordre)
             if (str_starts_with($check, $symbol)) {
                 // La partie 'valeur' de test est après
                 $test_str = substr($check, strlen($symbol));
                 // On décode les valeurs à tester
-                $test = Constante::decode($test_str, $type);
-                $value = Constante::decode($value_str, $type);
+                $test = Constante::decode($test_str, $type_no_csv);
                 // Les valeurs intervales ne peuvent pas être comparées (inégalités)
-                if ($type == 'interval') { // Donc on les convertis en secondes
-                    $test = date_create('@0')->add($test)->getTimestamp();
-                    $value = date_create('@0')->add($value)->getTimestamp();
+                // Donc on les convertis en secondes avec cette formule
+                if ($type == 'interval') $test = date_create('@0')->add($test)->getTimestamp();
+
+                try {
+                    $values = Constante::decode($value_str, $type);
+                    // Pour le csv, on test le check sur chaque valeur
+                    // Sauf si le check est la longueur, qui s'applique à l'array entier
+                    if (!is_array($values) || $symbol == "L") $values = [$values];
                 }
-                // Si le test renvoie vrai, la valeur passe ; on renvoie null
-                if ($fn($value, $test)) return null;
-                // Sinon, on renvoie un message d'erreur pour l'utilisateur
-                return $value_str.$msg.$test_str;
+                catch (Exception $e) {
+                    // On gère le message d'erreur de conversion pour le(s) type(s)
+                    return $value_str." ne peut pas être converti en ".$type;
+                }
+
+                foreach ($values as $value) {
+                    // Toujours la comparaison des intervales (en ignorant csv|)
+                    if ($type_no_csv == 'interval')
+                        $value = date_create('@0')->add($value)->getTimestamp();
+                    // Si le test renvoie faux, on renvoie un message d'erreur
+                    if (!$fn($value, $test)) {
+                        try { return strval($value)." n'est pas".$msg.$test_str; }
+                        catch (Exception $e) { return $value_str." n'est pas".$msg.$test_str; }
+                    }
+                }
+                return null;
             }
         }
         return null;

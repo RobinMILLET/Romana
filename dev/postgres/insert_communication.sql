@@ -76,13 +76,13 @@ INSERT INTO traductible (traductible_id) VALUES (0),
 (default),(default),(default),(default);
 
 INSERT INTO page (page_id, page_ordre, page_route) VALUES
-(0, 0, 'reservation'),
+(0, 0, 'display'),
 (1, 1, 'home'), (2, 2, 'about'), (3, 3, 'event'), (4, 4, 'hours'),
 (5, 5, 'menu'), (6, 6, 'book'), (7, 7, 'rating'), (8, 8, 'contact');
 
 INSERT INTO traduction (traductible_id, langue_id, traduction_libelle) VALUES
 (1, 0, 'Accueil'), (2, 0, 'À propos'), (3, 0, 'Événements'), (4, 0, 'Horaires'),
-(5, 0, 'Menus'), (6, 0, 'Réserver'), (7, 0, 'Avis'), (8, 0, 'Contact'),
+(5, 0, 'Menus'), (6, 0, 'Réservation'), (7, 0, 'Avis'), (8, 0, 'Contact'),
 (1, 1, 'Home'), (2, 1, 'About'), (3, 1, 'Events'), (4, 1, 'Hours'),
 (5, 1, 'Menus'), (6, 1, 'Booking'), (7, 1, 'Ratings'), (8, 1, 'Contact');
 
@@ -171,14 +171,14 @@ conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_
 1, 1, 5, NULL, 'ffffffff', NULL, NULL, '1vw', NULL, '0px', TRUE),
 ('10Reserv2', 6, NULL, 1, '<form#reserver>',
 2, 1, 2, NULL, 'ffffffff', NULL, 'max(25vw, 400px)', '1vw', NULL, '0 px', TRUE),
-('11Reserv3', 6, NULL, NULL, '### Utilisez notre système de réservation en ligne pour vous garantir une place !\nParfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.\n\nChoisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !\n\n*Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en [nous constactant](/contact)*.',
+('11Reserv3', 6, NULL, NULL, '### Utilisez notre système de réservation en ligne pour vous garantir une place !\nParfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.\n\nChoisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !\n\n*Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en [nous contactant](/contact)*.',
 2, 2, 2, '55555555', 'ffffffff', NULL, 'max(25vw, 400px)', '2.5vw 1vw', NULL, '0 px', TRUE),
 ('12Reserv4', 6, NULL, 1, '<form#trouver>',
 2, 3, 2, NULL, 'ffffffff', NULL, 'max(25vw, 400px)', '1vw', NULL, '0 px', TRUE);
 
 INSERT INTO contenu (langue_id, conteneur_id, contenu_texte) VALUES
 (0, 9, '<h1>Enregistrer ou consulter une réservation</h1>'),
-(0, 11, '<h3>Utilisez notre système de réservation en ligne pour vous garantir une place !</h3><p>Parfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.<br><br>Choisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !<br><br><i>Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en <a href="/contact">nous constactant</a></i>.</p>'),
+(0, 11, '<h3>Utilisez notre système de réservation en ligne pour vous garantir une place !</h3><p>Parfois victime de son succès, notre restaurant ne peut pas toujours répondre à la demande.<br><br>Choisissez un créneau à l''avance et gardez la conscience tranquille ; On s''occupe de tout !<br><br><i>Si vous avez oublié vos informations personelles ou votre numéro de réservation, il vous faudra demander de l''aide en <a href="/contact">nous contactant</a></i>.</p>'),
 
 (1, 9, '<h1>Book or modify a reservation</h1>'),
 (1, 11, '<h3>Use our online reservation system to garantee yourself a spot!</h3><p>Sometimes victim of its own success, our restaurant might not always be able to meet the popularity demands.<br><br>Choose a time slot in advance and relax ; We''ve got you covered!<br><br><i>If you forgot your personnal information or your reservation number, you''ll need to ask for help and <a href="/contact">contact us</a></i>.</p>');
@@ -218,8 +218,9 @@ conteneur_fond, conteneur_largeur, conteneur_marges, conteneur_ombre, conteneur_
 ('afficher1', 0, NULL, NULL, '<form#afficher1>',
 1, 1, 5, NULL, 'ffffffff', NULL, NULL, '1vw', NULL, '0px', TRUE),
 ('afficher2', 0, NULL, NULL, '<form#afficher2>',
-2, 1, 2, NULL, 'ffffffff', NULL, 'max(25vw, 400px)', '1vw', NULL, '0px', TRUE),
+2, 1, 2, NULL, 'ffffffff', NULL, 'max(25vw, 425px)', '1vw', NULL, '0px', TRUE),
 ('afficher3', 0, NULL, NULL, '<form#afficher3>',
-2, 2, 2, '55555555', 'ffffffff', NULL, 'max(25vw, 400px)', '1vw', NULL, '0px', TRUE),
+2, 2, 2, '55555555', 'ffffffff', NULL, 'max(25vw, 425px)', '1vw', NULL, '0px', TRUE),
 ('afficher4', 0, NULL, NULL, '<form#afficher4>',
-2, 3, 2, NULL, 'ffffffff', NULL, 'max(25vw, 400px)', '1vw', NULL, '0px', TRUE);
+2, 3, 2, NULL, 'ffffffff', NULL, 'max(25vw, 425px)', '1vw', NULL, '0px', TRUE);
+

@@ -1,10 +1,11 @@
 @php
     use App\Http\Controllers\PlanningController;
+    use App\Models\Constante;
     $early = PlanningController::bornesTZ((int) $reservation->reservation_personnes)[0];
     $horaire = DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire);
 @endphp
 
-<h3>Horaire</h3>
+<h3>Modify the details</h3>
 
 @push('scripts')
     <script defer>
@@ -24,58 +25,47 @@
     <input type="hidden" name="num" value="{{ $reservation->reservation_num}}">
     <input type="hidden" name="phone" value="{{ $reservation->reservation_telephone ?? ''}}">
 
-    <label>Nombre de personnes
+    <label>Number of people
         <input type="number" name="amount" id="nbInput" min="1" required
+            max="{{ Constante::key('réservation_personnes_max') }}"
             value="{{ $reservation->reservation_personnes}}">
     </label>
 
-    <label>Date de la réservation
+    <label>Date of the reservation
         <select name="date" id="dtInput" required>
-            <option value="">Sélectionnez une date</option>
+            <option value="">Select a date</option>
         </select>
     </label>
 
-    <label>Créneau horaire
+    <label>Time slot
         <select name="time" id="tmInput" required>
-            <option value="">Sélectionnez un créneau</option>
+            <option value="">Select a time slot</option>
         </select>
     </label>
 
-    <button type="submit">Enregistrer</button>
-
-    @if (session('errors'))
-        <div>
-        @if (session('errors')->first('Success2'))
-            <p class="green">Les modifications ont bien été prises en compte.</p>
-        @elseif (session('errors')->first('SlotTaken2'))
-            <p class="red">Le créneau choisis viens d'expirer !</p>
-        @elseif (session('errors')->first('NotFound2') || session('errors')->first('Cancelled2') ||
-                session('errors')->first('TooLate2') || session('errors')->first('SQL2'))
-            <p class="red">Erreur : Votre réservation n'a pas pu être modifiée...</p>
-        @endif
-        </div>
-    @endif
+    <button type="submit">Save</button>
 </form>
 
 @else
-    <label>Nombre de personnes
+    <label>Number of people
         <input type="number" name="amount" min="1" disabled
+            max="{{ Constante::key('réservation_personnes_max') }}"
             value="{{ $reservation->reservation_personnes}}">
     </label>
 
-    <label>Date de la réservation
+    <label>Date of the reservation
         <select name="date" id="dtInput" disabled>
         </select>
     </label>
 
-    <label>Créneau horaire
+    <label>Time slot
         <select name="time" id="tmInput" disabled>
         </select>
     </label>
 
     <div>
         <p>
-            Vous ne pouvez pas modifier l'horaire de cette réservation.
+            You cannot modify this reservation.
         </p>
     </div>
 @endif

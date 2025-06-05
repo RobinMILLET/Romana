@@ -4,7 +4,7 @@
     $horaire = DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire);
 @endphp
 
-<h3>Infomations</h3>
+<h3>Modifier les informations</h3>
 
 @if ($early < $horaire && (int)$reservation->statut_id != 6)
 
@@ -15,54 +15,43 @@
     <input type="hidden" name="num" value="{{ $reservation->reservation_num}}">
     <input type="hidden" name="phone" value="{{ $reservation->reservation_telephone ?? ''}}">
 
-    <label>Last name
+    <label>Nom de famille
         <input type="text" name="lastname" maxlength="250" required
             value="{{ $reservation->reservation_nom ?? '' }}">
     </label>
 
-    <label>First name
+    <label>Prénom
         <input type="text" name="firstname" maxlength="250" required
             value="{{ $reservation->reservation_prenom ?? '' }}">
     </label>
 
-    <label>Other mentions
+    <label>Autres mentions
         <textarea name="other" maxlength="500"
             value="{{ $reservation->reservation_commentaire ?? '' }}"></textarea>
     </label>
 
-    <button type="submit">Save</button>
-
-    @if (session('errors'))
-        <div>
-        @if (session('errors')->first('Success1'))
-            <p class="green">Reservation successfully modified.</p>
-        @elseif (session('errors')->first('NotFound1') || session('errors')->first('Cancelled1') ||
-                session('errors')->first('TooLate1') || session('errors')->first('SQL1'))
-            <p class="red">Error : Your reservation could not be modified...</p>
-        @endif
-        </div>
-    @endif
+    <button type="submit">Enregistrer</button>
 </form>
 
 @else
-    <label>Last name
+    <label>Nom de famille
         <input type="text" name="lastname" maxlength="250" disabled
             value="{{ $reservation->reservation_nom ?? '' }}">
     </label>
 
-    <label>First name
+    <label>Prénom
         <input type="text" name="firstname" maxlength="250" disabled
             value="{{ $reservation->reservation_prenom ?? '' }}">
     </label>
 
-    <label>Other mentions
+    <label>Autres mentions
         <textarea name="other" maxlength="500" disabled
             value="{{ $reservation->reservation_commentaire ?? '' }}"></textarea>
     </label>
 
     <div>
         <p>
-            You cannot modify this reservation.
+            Vous ne pouvez pas modifier les informations de cette réservation.
         </p>
     </div>
 @endif
