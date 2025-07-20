@@ -5,8 +5,11 @@ use App\Http\Controllers\CompteController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\VitrineController;
+use App\Models\Categorie;
 use App\Models\Constante;
 use App\Models\Langue;
+use App\Models\Reservation;
+use App\Models\Statut;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -18,8 +21,7 @@ use Illuminate\Support\Facades\Session;
 // ------ TEST ------
 
 Route::get('/test', function(){
-    echo Session::get("auth");
-    dd(AuthController::current());
+    //var_dump(PlanningController::nextPlanning(new DateTime(), 0));
 })->name('test');
 
 
@@ -45,8 +47,13 @@ Route::get('/hours', function(){
     return VitrineController::index(4);
 })->name('hours');
 
-Route::get('/menu', function(){
-    return VitrineController::index(5);
+Route::get('/menu/{id?}', function($id = null){
+    $menus = Categorie::whereNull('categorie_idparent')->orderBy('categorie_ordre')->get();
+    if ($id === null) $id = $menus->first()->categorie_id;
+    return view(
+        'Public.Pages.menu',
+        ['id' => $id, 'menus' => $menus]
+    );
 })->name('menu');
 
 Route::get('/book', function(){
@@ -79,7 +86,7 @@ Route::get('/display', function() {
 
 function adminRoute(int|string|array $perm = null) {
     $personnel = AuthController::current(); // Récupérer le personnel
-    // S'il n'existe pas,rediriger vers /login
+    // S'il n'existe pas, rediriger vers /login
     if ($personnel === null) return redirect()->route('admin.login');
     // S'il doit changer son mot de passe, rediriger vers la page bloquante
     if ($personnel->personnel_mdp_change === null) return redirect()->route('admin.mdp');
@@ -103,10 +110,39 @@ Route::get('/admin/login', function(){
     return view('Private.Pages.login');
 })->name('admin.login');
 
-Route::get('/admin/dashboard', function(){
+Route::get('/admin/dashboard', function() {
     if ($r = adminRoute()) return $r;
     return view('Private.Pages.dashboard');
 })->name('admin.dashboard');
+
+Route::get('/admin/reservations/more', function() {
+    Session::put('more', true);
+    return redirect()->route('admin.reservations');
+})->name('admin.reservations.more');
+
+Route::get('/admin/reservations/', function() {
+    if ($r = adminRoute()) return $r;
+    // Déterminer si plus de réservations doivent être chargées
+    $more = session('more', false);
+    Session::forget('more');
+    $reservations = Reservation::orderBy('reservation_horaire');
+    if (!$more) {
+        $limit_past = (new DateTime("-1 week"))->format("Y-m-d H:i:s");
+        $limit_futur = (new DateTime("+1 month"))->format("Y-m-d H:i:s");
+        $reservations->where('reservation_horaire', '>', $limit_past)
+                ->where('reservation_horaire', '<', $limit_futur);
+    }
+    $statuts = Statut::orderBy('statut_id')->get();
+    foreach ($statuts as $statut) {
+        $statut->nb = (clone $reservations)->where('statut_id', $statut->statut_id)->count();
+    }
+    return view('Private.Pages.reservations',
+        [
+            "reservations" => $reservations->get(),
+            "diff" => Reservation::count() - $reservations->count(),
+            "statuts" => $statuts
+        ]);
+})->name('admin.reservations');
 
 Route::get('/admin/mdp', function(){
     $personnel = AuthController::current();

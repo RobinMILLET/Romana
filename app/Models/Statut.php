@@ -11,6 +11,6 @@ class Statut extends Model
     public $timestamps = false;
 
     public function Reservation() {
-        return $this->hasMany(Reservation::class, "statut_id", "statut-id")->get();
+        return $this->hasMany(Reservation::class, "statut_id", "statut_id")->get();
     }
 }

@@ -14,19 +14,18 @@ use Log;
 class ReservationController extends Controller
 {
     private static string $NUM_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    public static int $CANCELLED_ID = 6;
 
     public static function reserver(Request $request) {
         // Validation du corps POST
         // Si appellé depuis l'UI, il n'est normalement pas possible de fail
         // Néanmoins on veut éviter les modifications devtools
         // Et on pourrait voir pour adapter ce code et autoriser des appels API
-        $override = AuthController::requirePerm('RESER');
         $request->validate([
-            'lastname' => [$override ? 'nullable' : 'required', 'string', 'max:256'],
-            'firstname' => [$override ? 'nullable' : 'required', 'string', 'max:256'],
-            'phone' => ReservationController::validate_phone(null, $override),
-            'amount' => ['required','integer','min:1'] + $override ? [] :
-                ['max:'.strval(Constante::key('réservation_personnes_max'))],
+            'lastname' => ['required', 'string', 'max:256'],
+            'firstname' => ['required', 'string', 'max:256'],
+            'phone' => ReservationController::validate_phone(),
+            'amount' => ['required','integer','min:1','max:'.strval(Constante::key('réservation_personnes_max'))],
             'date' => ['required','string','size:10','regex:/^\d{4}-\d{2}-\d{2}$/'],
             'time' => ['required','string','size:8','regex:/^\d{2}:\d{2}:\d{2}$/'],
             'other' => ['nullable','string','max:512']
@@ -36,19 +35,19 @@ class ReservationController extends Controller
         [$early, $late] = PlanningController::bornesTZ($request->amount);
         // Créer l'objet DateTime depuis l'entrée date et time
         $dt = DateTime::createFromFormat("Y-m-dH:i:s", $request->date.$request->time);
+        if ($dt === false) return redirect()->back()->withErrors(
+            ['DateTime' => 'The specified date and time could not be resolved.']);
         
-        if (!$override) { // Les checks suivants ne sont pas effectués si créé par le staff
-            // S'assurer qu'il est dans les bornes
-            if (!$override && ($dt < $early || $late < $dt)) return redirect()->back()->withErrors(
+        // S'assurer qu'il est dans les bornes
+        if ($dt < $early || $late < $dt) return redirect()->back()->withErrors(
+            ['SlotTaken' => 'The requested date and time are not available.']);
+        
+        // Ici on récupère uniquement les créneaux interessés...
+        $crenaux = PlanningController::crenaux($dt, $dt, $request->amount);
+        // ... en qualité de double-check/validation de la disponibilité
+        if (!$crenaux || count($crenaux) == 0 || array_search($dt->format("Y-m-d H:i:s"),
+            array_column($crenaux, 'datetime')) === false) return redirect()->back()->withErrors(
                 ['SlotTaken' => 'The requested date and time are not available.']);
-            
-            // Ici on récupère uniquement les créneaux interessés...
-            $crenaux = PlanningController::crenaux($dt, $dt, $request->amount);
-            // ... en qualité de double-check/validation de la disponibilité
-            if (!$crenaux || count($crenaux) == 0 || array_search($dt->format("Y-m-d H:i:s"),
-                array_column($crenaux, 'datetime')) === false) return redirect()->back()->withErrors(
-                    ['SlotTaken' => 'The requested date and time are not available.']);
-        }
         
         $data = [
             "statut_id" => 1,
@@ -74,7 +73,7 @@ class ReservationController extends Controller
             return redirect()->back()->withErrors(
                 ['SQL' => 'Unnexpected database error.']);
         }
-        if (!$override && $reservation->reservation_telephone && Constante::key('sms_réservation')) {
+        if ($reservation->reservation_telephone && Constante::key('sms_réservation')) {
             try {
                 SmsController::send(
                     SmsController::validation($reservation->reservation_num),
@@ -89,7 +88,7 @@ class ReservationController extends Controller
         }
         DB::commit();
         return redirect()->route('display')
-            ->with(['reservation' => $reservation, 'errors' => 'Success1']);
+            ->with(['reservation' => $reservation, 'success' => 'Success1']);
     }
 
     public static function trouver(Request $request) {
@@ -120,11 +119,11 @@ class ReservationController extends Controller
         return $code;
     }
 
-    public static function validate_phone(string $request_phone = null, bool $override = false) {
+    public static function validate_phone(string $request_phone = null) {
         // Sans argument, on retourne la validation pour le numéro de téléphone
-        if ($request_phone === null) return [$override ? 'nullable' : 'required', 'string',
-            'max:17', 'regex:/^((\+\d{1,2}[\-_\. ]?[1-9])|(0[1-9]))([\-_\. ]?\d{2}){4}$/'];
-        if ($override && !$request_phone) return null;
+        if ($request_phone === null) return ['required', 'string',
+            'max:17', 'regex:/^((\+?\d{1,2}[\-_\. ]?[1-9])|(0[1-9]))([\-_\. ]?\d{2}){4}$/'];
+        if (!$request_phone) return null;
         // L'entrée téléphone accepte des séparateurs ; Pas la BDD
         $phone = str_replace(['-','_','.',' '], '', $request_phone);
         // On veut finir avec un format ^[0-9]{11}$
@@ -149,7 +148,7 @@ class ReservationController extends Controller
         // L'utilisateur connecté et autorisé peut ignorer ces contraintes
         if (AuthController::requirePerm('RESER')) return null;
         // Canceled : la réservation est annulée
-        if ($reservation->statut_id == 6) return redirect()->back()
+        if ($reservation->statut_id == ReservationController::$CANCELLED_ID) return redirect()->back()
             ->with(['reservation' => $reservation, 'errors' => 'Cancelled']);
         // TooLate : trop tard pour effectuer l'action
         if (DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire) < $limit)
@@ -158,12 +157,11 @@ class ReservationController extends Controller
     }
 
     public static function modifinfo(Request $request) {
-        $override = AuthController::requirePerm('RESER');
         $request->validate([
-            'phone' => [$override?'nullable':'required','string','size:11','regex:/^[0-9]{11}$/'],
+            'phone' => ['required','string','size:11','regex:/^[0-9]{11}$/'],
             'num' => ['required','string','size:8','regex:/^[0-9A-Za-z]{8}$/'],
-            'lastname' => [$override?'nullable':'required','string','max:256'],
-            'firstname' => [$override?'nullable':'required','string','max:256'],
+            'lastname' => ['required','string','max:256'],
+            'firstname' => ['required','string','max:256'],
             'other' => ['nullable','string','max:512']
         ]);
         
@@ -191,12 +189,10 @@ class ReservationController extends Controller
     }
 
     public static function modifhoraire(Request $request) {
-        $override = AuthController::requirePerm('RESER');
         $request->validate([
-            'phone' => [$override?'nullable':'required','string','size:11','regex:/^[0-9]{11}$/'],
+            'phone' => ['required','string','size:11','regex:/^[0-9]{11}$/'],
             'num' => ['required','string','size:8','regex:/^[0-9A-Za-z]{8}$/'],
-            'amount' => ['required','integer','min:1'] + $override ? [] :
-                ['max:'.strval(Constante::key('réservation_personnes_max'))],
+            'amount' => ['required','integer','min:1','max:'.strval(Constante::key('réservation_personnes_max'))],
             'date' => ['required','string','size:10','regex:/^\d{4}-\d{2}-\d{2}$/'],
             'time' => ['required','string','size:8','regex:/^\d{2}:\d{2}:\d{2}$/']
         ]);
@@ -209,18 +205,18 @@ class ReservationController extends Controller
         [$early, $late] = PlanningController::bornesTZ($request->amount);
         // Créer l'objet DateTime depuis l'entrée date et time
         $dt = DateTime::createFromFormat("Y-m-dH:i:s", $request->date.$request->time);
+        if ($dt === false) return redirect()->back()->withErrors(
+            ['DateTime' => 'The specified date and time could not be resolved.']);
 
-        if (!$override) { // Les checks suivants ne sont pas effectués si créé par le staff
-            // S'assurer qu'il est dans les bornes
-            if ($dt < $early || $late < $dt) return redirect()->back()->with(['errors' => 'SlotTaken']);
-            
-            // Ici on récupère uniquement les créneaux interessés...
-            $crenaux = PlanningController::crenaux($dt, $dt, $request->amount);
-            // ... en qualité de double-check/validation de la disponibilité
-            if (!$crenaux || count($crenaux) == 0 || array_search($dt->format("Y-m-d H:i:s"),
-                array_column($crenaux, 'datetime')) === false)
-                    return redirect()->back()->with(['errors' => 'SlotTaken']);
-        }
+        // S'assurer qu'il est dans les bornes
+        if ($dt < $early || $late < $dt) return redirect()->back()->with(['errors' => 'SlotTaken']);
+        
+        // Ici on récupère uniquement les créneaux interessés...
+        $crenaux = PlanningController::crenaux($dt, $dt, $request->amount);
+        // ... en qualité de double-check/validation de la disponibilité
+        if (!$crenaux || count($crenaux) == 0 || array_search($dt->format("Y-m-d H:i:s"),
+            array_column($crenaux, 'datetime')) === false)
+                return redirect()->back()->with(['errors' => 'SlotTaken']);
 
         DB::beginTransaction();
         try {
@@ -241,9 +237,8 @@ class ReservationController extends Controller
     }
 
     public static function annulation(Request $request) {
-        $override = AuthController::requirePerm('RESER');
         $request->validate([
-            'phone' => [$override?'nullable':'required','string','size:11','regex:/^[0-9]{11}$/'],
+            'phone' => ['required','string','size:11','regex:/^[0-9]{11}$/'],
             'num' => ['required','string','size:8','regex:/^[0-9A-Za-z]{8}$/']
         ]);
         
@@ -253,7 +248,7 @@ class ReservationController extends Controller
 
         DB::beginTransaction();
         try {
-            $reservation->statut_id = 6;
+            $reservation->statut_id = ReservationController::$CANCELLED_ID;
             $reservation->save();
             DB::commit();
             return redirect()->route('display')->with(

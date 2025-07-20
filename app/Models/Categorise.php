@@ -12,14 +12,15 @@ class Categorise extends Model
     public $incrementing = false;
     protected $fillable = [
         'categorie_id',
-        'element_id',
-        'categorise_prix'
+        'produit_id',
+        'categorise_prix',
+        'categorise_ordre'
     ];
 
     public function Categorie() {
         return $this->hasMany(Categorie::class, "categorie_id", "categorie_id")->get()->first();
     }
-    public function Element() {
-        return $this->hasMany(Element::class, "element_id", "element_id")->get()->first();
+    public function Produit() {
+        return $this->hasMany(Produit::class, "produit_id", "produit_id")->get()->first();
     }
 }

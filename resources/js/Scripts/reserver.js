@@ -1,6 +1,6 @@
 // Formatteur automatique de date utilisant la langue de la page
 const formatter = new Intl.DateTimeFormat(document.documentElement.lang, {
-  weekday: "long", year: "numeric", month: "long", day: "numeric"
+  weekday: "long", month: "long", day: "numeric"
 });
 
 function addDate(date, selected = false) {

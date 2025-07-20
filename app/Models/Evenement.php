@@ -12,7 +12,8 @@ class Evenement extends Model
     protected $fillable = [
         'evenement_libelle',
         'evenement_ordre',
-        'evenement_suppression',
+        'evenement_debut',
+        'evenement_fin',
         'evenement_visible'
     ];
 

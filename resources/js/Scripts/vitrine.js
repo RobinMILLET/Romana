@@ -14,7 +14,7 @@ function photoAR() {
     // Mais celui-ci est écrasé par la directive CSS suivante, liée à .natural
     // .conteneur.notext.natural { aspect-ratio: unset !important; }
 
-    if (height < 10) { // Si l'élément est applatit
+    if (height < 50) { // Si l'élément est applatit
       // On enlève .natural, ce qui retire la directive !important
       // Et le ratio forcé par l'image reprend le dessus
       container.classList.remove("natural");

@@ -3,7 +3,7 @@ section {
   flex-wrap: wrap;
   justify-content: space-evenly;
   gap: 0.5rem;
-  margin: 1.5rem 0;
+  margin: 10vh 0;
   height: fit-content;
 }
   
@@ -86,14 +86,10 @@ button:not(:disabled):active {
   display: block;
   margin: 5px 5px 20px 5px;
   padding: 2.5px 5px;
-  width: min(90vw, 300px);
+  width: min(90vw, 200px);
 }
 
 .conteneur input, .conteneur select, .conteneur textarea {
-  display: block;
-  margin: 5px 5px 20px 5px;
-  padding: 2.5px 5px;
-  width: min(90vw, 300px);
   background-color: #111;
   border: 1px solid #555;
   color: white

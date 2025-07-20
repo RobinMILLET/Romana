@@ -20,7 +20,7 @@ sudo -u postgres psql
 ALTER USER postgres WITH PASSWORD 'mdp';
 CREATE USER romana WITH PASSWORD 'mdp';
 CREATE DATABASE romana OWNER romana;
-GRANT ALL PRIVILEGES ON DATABASE romana TO romana;
+CREATE SCHEMA romana AUTHORIZATION romana;
 
 cd /usr/local/bin
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

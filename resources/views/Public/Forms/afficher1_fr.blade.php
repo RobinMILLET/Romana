@@ -4,7 +4,7 @@
     @elseif (session('success') == 'Success2')
         <p class="green">Les informations modifiées ont bien été prises en compte.</p>
     @elseif (session('success') == 'Success3')
-        <p class="green">Les détails modifiés ont bien été prises en compte.</p>
+        <p class="green">Les détails modifiés ont bien été pris en compte.</p>
     @elseif (session('success') == 'Success4')
         <p class="green">La réservation à bien été annulée.</p>
     @endif

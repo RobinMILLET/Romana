@@ -30,7 +30,7 @@ const computedStyle = computed(() => {
     color: `#${c.conteneur_couleur}`,
     textAlign: computeTextAlign(c.conteneur_aligne),
     fontFamily: c.conteneur_police_texte || 'inherit',
-    padding: c.conteneur_marges || '0.1em',
+    padding: (props.notext ? null : c.conteneur_marges) || '0.1em',
     justifyContent: computeJustify(c.conteneur_aligne),
     alignItems: computeAlign(c.conteneur_aligne),
   }
@@ -40,7 +40,6 @@ const computedStyle = computed(() => {
 
 const computedImage = computed(() => {
   const c = props.conteneur
-  const notext = props.notext
 
   const style = {
     borderRadius: c.conteneur_rayon || '0px',
@@ -61,7 +60,7 @@ const computedImage = computed(() => {
     style.backgroundImage = `url('/photos/${c.conteneur_photo_url}')`
     style.backgroundSize = 'cover'
     style.backgroundPosition = 'center'
-    if (notext) {
+    if (props.notext) {
       var image = new Image()
       image.src = `/photos/${c.conteneur_photo_url}`
       var width = image.naturalWidth

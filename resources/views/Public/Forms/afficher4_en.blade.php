@@ -1,5 +1,6 @@
 @php
     use App\Http\Controllers\PlanningController;
+    use App\Http\Controllers\ReservationController;
     $early = PlanningController::modTZ();
     $horaire = DateTime::createFromFormat("Y-m-d H:i:s", $reservation->reservation_horaire);
 @endphp
@@ -16,7 +17,7 @@
 </p>
 <br><br>
 
-@if ($early < $horaire && (int)$reservation->statut_id != 6)
+@if ($early < $horaire && (int)$reservation->statut_id != ReservationController::$CANCELLED_ID)
 
 <form action="{{ route('api.annulation') }}" method="POST">
     @csrf

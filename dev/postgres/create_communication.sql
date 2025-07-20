@@ -9,10 +9,10 @@ SET search_path = romana;
     SEQUENCES
 */ --------------------------------
 
-CREATE SEQUENCE sq_conteneur;
+CREATE SEQUENCE sq_conteneur START 101;
 CREATE SEQUENCE sq_evenement;
 CREATE SEQUENCE sq_photo;
-CREATE SEQUENCE sq_traductible;
+CREATE SEQUENCE sq_traductible START 201;
 
 /* --------------------------------
     TRADUCTIBLE
@@ -44,10 +44,10 @@ CREATE TABLE categorie (
         ON DELETE SET NULL
 );
 
-CREATE TABLE element (
-    element_id INT PRIMARY KEY,
-    CONSTRAINT fk_element_traductible
-        FOREIGN KEY (element_id)
+CREATE TABLE produit (
+    produit_id INT PRIMARY KEY,
+    CONSTRAINT fk_produit_traductible
+        FOREIGN KEY (produit_id)
         REFERENCES traductible(traductible_id)
         ON DELETE CASCADE
 );
@@ -79,31 +79,32 @@ CREATE TABLE typepresence (
 
 CREATE TABLE categorise (
     categorie_id INT NOT NULL,
-    element_id INT NOT NULL,
+    produit_id INT NOT NULL,
     categorise_prix NUMERIC(6,2) NOT NULL,
+    categorise_ordre INT NOT NULL,
     CONSTRAINT pk_categorise
-        PRIMARY KEY (categorie_id, element_id),
+        PRIMARY KEY (categorie_id, produit_id),
     CONSTRAINT fk_categorise_categorie
         FOREIGN KEY (categorie_id)
         REFERENCES categorie(categorie_id)
         ON DELETE CASCADE,
-    CONSTRAINT fk_categorise_element
-        FOREIGN KEY (element_id)
-        REFERENCES element(element_id)
+    CONSTRAINT fk_categorise_produit
+        FOREIGN KEY (produit_id)
+        REFERENCES produit(produit_id)
         ON DELETE CASCADE,
     CONSTRAINT ck_categorise_prix
         CHECK (categorise_prix > 0)
 );
 
 CREATE TABLE presence (
-    element_id INT NOT NULL,
+    produit_id INT NOT NULL,
     allergene_id INT NOT NULL,
     typepresence_id INT NOT NULL,
     CONSTRAINT pk_presence
-        PRIMARY KEY (element_id, allergene_id),
-    CONSTRAINT fk_presence_element
-        FOREIGN KEY (element_id)
-        REFERENCES element(element_id)
+        PRIMARY KEY (produit_id, allergene_id),
+    CONSTRAINT fk_presence_produit
+        FOREIGN KEY (produit_id)
+        REFERENCES produit(produit_id)
         ON DELETE CASCADE,
     CONSTRAINT fk_presence_allergene
         FOREIGN KEY (allergene_id)
@@ -123,8 +124,11 @@ CREATE TABLE evenement (
     evenement_id INT PRIMARY KEY DEFAULT nextval('sq_evenement'),
     evenement_libelle VARCHAR(64) NOT NULL,
     evenement_ordre INT NOT NULL,
-    evenement_suppression TIMESTAMP NULL,
-    evenement_visible BOOLEAN NOT NULL DEFAULT FALSE
+    evenement_debut TIMESTAMP NULL,
+    evenement_fin TIMESTAMP NULL,
+    evenement_visible BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT ck_evenement_dates
+        CHECK (evenement_debut < evenement_fin)
 );
 
 CREATE TABLE police (
@@ -200,8 +204,8 @@ CREATE TABLE langue (
 CREATE TABLE traduction (
     langue_id INT NOT NULL,
     traductible_id INT NOT NULL,
-    traduction_libelle VARCHAR(64) NOT NULL,
-    traduction_description VARCHAR(512) NULL,
+    traduction_libelle VARCHAR(512) NOT NULL,
+    traduction_description VARCHAR(1024) NULL,
     CONSTRAINT fk_traduction_langue
         FOREIGN KEY (langue_id)
         REFERENCES langue(langue_id)
@@ -232,9 +236,10 @@ CREATE TABLE contenu (
 
 CREATE UNIQUE INDEX ix_allergene_id ON allergene (allergene_id);
 CREATE UNIQUE INDEX ix_categorie_id ON categorie (categorie_id);
-CREATE UNIQUE INDEX ix_categorie_ordre ON categorie (categorie_ordre);
+CREATE UNIQUE INDEX ix_categorie_ordre ON categorie (categorie_idparent, categorie_ordre);
 CREATE INDEX ix_categorie_parent ON categorie (categorie_idparent);
-CREATE UNIQUE INDEX ix_categorise_pk ON categorise (categorie_id, element_id);
+CREATE UNIQUE INDEX ix_categorise_pk ON categorise (categorie_id, produit_id);
+CREATE UNIQUE INDEX ix_categorise_ordre ON categorise (categorie_id, categorise_ordre);
 CREATE UNIQUE INDEX ix_conteneur_id ON conteneur (conteneur_id);
 CREATE UNIQUE INDEX ix_conteneur_libelle ON conteneur (conteneur_libelle);
 CREATE INDEX ix_conteneur_evenement ON conteneur (evenement_id);
@@ -245,7 +250,6 @@ CREATE UNIQUE INDEX ix_conteneur_position ON conteneur
     (page_id, evenement_id, conteneur_ligne, conteneur_colonne);
 CREATE INDEX ix_conteneur_visible ON conteneur (conteneur_visible);
 CREATE UNIQUE INDEX ix_contenu_pk ON contenu (conteneur_id, langue_id);
-CREATE UNIQUE INDEX ix_element_id ON element (element_id);
 CREATE UNIQUE INDEX ix_evenement_id ON evenement (evenement_id);
 CREATE UNIQUE INDEX ix_evenement_libelle ON evenement (evenement_libelle);
 CREATE UNIQUE INDEX ix_evenement_ordre ON evenement (evenement_ordre);
@@ -260,7 +264,8 @@ CREATE UNIQUE INDEX ix_photo_id ON photo (photo_id);
 CREATE UNIQUE INDEX ix_photo_libelle ON photo (photo_libelle);
 CREATE UNIQUE INDEX ix_police_id ON police (police_id);
 CREATE UNIQUE INDEX ix_police_libelle ON police (police_libelle);
-CREATE UNIQUE INDEX ix_presence_pk ON presence (allergene_id, element_id);
+CREATE UNIQUE INDEX ix_presence_pk ON presence (allergene_id, produit_id);
+CREATE UNIQUE INDEX ix_produit_id ON produit (produit_id);
 CREATE UNIQUE INDEX ix_traductible_id ON traductible (traductible_id);
 CREATE UNIQUE INDEX ix_traduction_pk ON traduction (traductible_id, langue_id);
 CREATE UNIQUE INDEX ix_typepresence_id ON typepresence (typepresence_id);

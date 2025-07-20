@@ -51,6 +51,10 @@ class AuthController extends Controller
             // Sinon, on indique qu'il doit être changé
             $personnel->personnel_mdp_change = null;
             $personnel->save();
+            Historique::create([
+                "personnel_id" => (int)$personnel->personnel_id,
+                "historique_message" => "Mot de passe expiré/invalide"
+            ]);
         }
         return $personnel;
     }

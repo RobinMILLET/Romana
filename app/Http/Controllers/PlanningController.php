@@ -40,6 +40,23 @@ class PlanningController extends Controller
         // [$early, $late] = PlanningController::bornesTZ($nb?);
     }
 
+    public static function nextPlanning(DateTime $time, int $couverts = Null) {
+        // Obtenir les plannings futures (exclusif) dans l'ordre
+        $plannings = Planning::orderBy('planning_debut')
+            ->where('planning_debut', '>', $time->format("Y-m-d H:i:s"))->get();
+        // Pas de restriction de couverts ; on renvoie le 1er
+        if ($couverts === Null) return $plannings->first()->planning_debut;
+        // Si le couvert n'est pas 0, on peut simplement filter avec planning_couverts
+        if ($couverts !== 0) return $plannings->firstWhere('planning_couverts', $couverts)->planning_debut;
+        foreach ($plannings as $planning) { // Si le couvert est 0 :
+            // Les plannings avec couverts == 0 sont filtrés hors de la table;
+            // On doit donc prendre le prochain planning pas immédiatement suivis d'un autre
+            if (!Planning::find($planning->planning_fin))
+                // À noter qu'on renvoie la date et non un objet Planning
+                return DateTime::createFromFormat("Y-m-d H:i:s", $planning->planning_fin);
+        }
+        return Null;
+    }
 
     public static function changePlanning(DateTime $start, DateTime $end, $function = null) {
         // Par défaut, retire le planning entre $start et $end

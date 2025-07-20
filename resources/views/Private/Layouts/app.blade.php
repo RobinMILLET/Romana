@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+@stack('scripts')
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Romana')</title>

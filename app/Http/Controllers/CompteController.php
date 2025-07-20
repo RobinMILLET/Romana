@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Constante;
+use App\Models\Historique;
 use DateTime;
 use DB;
 use Exception;
@@ -79,6 +80,10 @@ class CompteController extends Controller
             $personnel->personnel_mdp = Hash::make($request->password1);
             $personnel->personnel_mdp_change = (new DateTime())->format("Y-m-d H:i:s");
             $personnel->save();
+            Historique::create([
+                "personnel_id" => (int)$personnel->personnel_id,
+                "historique_message" => "Mot de passe changé"
+            ]);
         }
         catch (Exception $e) {
             DB::rollBack();

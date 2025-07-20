@@ -1,0 +1,132 @@
+details {
+    margin: 10px;
+}
+
+details summary {
+    font-size: large;
+    font-weight: bold;
+}
+
+details section {
+    margin: 10px 10px 0;
+}
+
+details section div {
+    margin-right: 5vw;
+    display: inline-flex;
+    align-items: center;
+    text-wrap: nowrap;
+    gap: 0.5vw;
+}
+
+#reservations {
+    margin: 0 5px 0 5px;
+}
+
+.reservation {
+    border-bottom: 1px solid grey;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.reservation > div {
+    text-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: "...";
+    border-bottom: 1px dotted #88888888;
+}
+
+#example {
+    margin: 5vh 5px 5px;
+    margin-bottom: 0;
+    font-family: unset !important;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+}
+
+#example .res_origin {
+    visibility: hidden;
+}
+
+.res_origin {
+    margin: 0 5px 0 5px;
+    flex: 0 0 25px;
+}
+
+.res_num {
+    font-family: monospace;
+    flex: 0 0 75px;
+}
+
+.res_stat {
+    align-content: center;
+}
+
+.res_stat span, #statuts div span {
+    display: block;
+    aspect-ratio: 1;
+    height: 0.5lh;
+    border-radius: 50%;
+}
+
+.res_statut {
+    flex: 0 0 100px;
+}
+
+.res_date {
+    flex: 0 0 50px;
+}
+
+.res_time {
+    flex: 0 0 55px;
+}
+
+.res_nb {
+    flex: 0 0 35px;
+}
+
+.res_lastname {
+    flex: 0 0 100px;
+}
+
+.res_firstname {
+    flex: 0 0 100px;
+}
+
+.res_phone {
+    flex: 0 0 135px;
+}
+
+.res_comment {
+    min-width: 150px;
+    flex: 1;
+    text-overflow: " [...]" !important;
+}
+
+.res_more {
+    flex: 0 0 10px;
+}
+
+.statut_hidden {
+    display: none;
+}
+
+body.show-private .res_more {
+    display: none;
+}
+
+body:not(.show-private) :is(.res_lastname, .res_firstname, .res_phone, .res_comment) {
+    display: none;
+}
+
+button {
+    opacity: 0.9;
+    background-color: #ffffff40;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 0.01lh 0.5lh;
+}
+
+button:hover { opacity: 1; }
+button:active { opacity: 0.8; }

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Constante;
+use App\Models\Categorie;
+use App\Models\Categorise;
 use App\Models\Conteneur;
 use App\Models\Langue;
 use App\Models\Page;
@@ -10,12 +11,14 @@ use App\Models\Reservation;
 
 class VitrineController extends Controller
 {
+    public static int $MAX_LEVEL = 3;
+
     public static function obtenirPagesTraduites() {
         $langue = session('locale', Langue::find(0)); // Langue active sur le site
         $pages = Page::where('page_id', '>', 0)->orderBy('page_ordre')->get(); // Obtenir les pages
         // Obtenir les traductions depuis Traductible->Traduction->traduction_libelle
         foreach ($pages as $page) {
-            $page->page_traduction_libelle = $page->obtenirTraduction($langue->langue_id);
+            $page->page_traduction_libelle = $page->Traductible()->obtenirTraduction($langue->langue_id)->traduction_libelle;
         }
         return $pages;
     }
@@ -35,36 +38,51 @@ class VitrineController extends Controller
                 ->orderBy('conteneur_colonne')->get();
             // Obtenir les traductions depuis Contenu->contenu_texte
             foreach ($local as $conteneur) {
-                $textes[strval($conteneur->conteneur_id)] = VitrineController::remplacer(
-                    $conteneur->obtenirContenuTraduit($langue_id));
+                $textes[strval($conteneur->conteneur_id)] = $conteneur->obtenirContenuTraduit($langue_id);
                 // On place aussi les valeurs de photo et police si présentes
-                $conteneur->conteneur_photo_url = $conteneur->Photo() ? $conteneur->Photo()->photo_url : null;
-                $conteneur->conteneur_police_texte = $conteneur->Police() ? $conteneur->Police()->police_texte : null;
+                $conteneur->conteneur_photo_url = $conteneur->Photo()?->photo_url;
+                $conteneur->conteneur_police_texte = $conteneur->Police()?->police_texte;
             }
             array_push($lignes, $local);
         }
         // Insérer les variables dans la vitrine
         $script = array_search($page_id, [0, 6]) !== false;
-        $captcha = $page_id == 6 && (
-            Constante::key('captcha_réservation')||
-            Constante::key('captcha_réservation')
-        );
         return view("Public.Pages.vitrine", [
-            'lignes' => $lignes, 'textes' => $textes,
-            'script' => $script, 'captcha' => $captcha,
+            'lignes' => $lignes, 'textes' => $textes, 'script' => $script,
             'reservation' => $reservation, 'public' => $public
         ]);
     }
 
-    public static function remplacer(string $text) {
-        foreach ([ // Rechercher et remplacer avec [cible => résultat]
-            "<googlemap/>" => "<iframe class='gmap' src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112913.".
-                "34543813349!2d6.032387482375051!3d45.95580804090011!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.".
-                "1!3m3!1m2!1s0x478b8fe110e3bc4b%3A0x4171e0c94e0c9be8!2sLa%20Romana!5e0!3m2!1sfr!2sfr!4v1747588357514!5m2!1sfr!2sfr' ".
-                "allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade' width='100%' height='100%'></iframe>"
-        ] as $key => $value) { // On itère et on remplace tout
-            $text = str_replace($key, $value, $text);
+    public static function menu($id, $level = 1) {
+        $category = Categorie::find($id);
+        if ($category === null) return;
+        if ($level > VitrineController::$MAX_LEVEL) $level = VitrineController::$MAX_LEVEL;
+
+        $langue_id = session('locale', Langue::find(0))->langue_id;
+        $traduction = $category->Traductible()->obtenirTraduction($langue_id);
+        echo "<p class='menu-category menu-category-$level'>".$traduction->traduction_libelle."</p>";
+        if ($traduction->traduction_description) {
+            echo "<p class='menu-description menu-description-$level'>".$traduction->traduction_description."</p>";
         }
-        return ctype_space($text) ? '' : $text;
+
+        $items = Categorise::where('categorie_id', $id)->orderBy('categorise_ordre')->get();
+        echo "<table>";
+        foreach ($items as $item) {
+            $produit = $item->Produit()->Traductible()->obtenirTraduction($langue_id);
+            echo "<tr><td class='menu-item'><p class='menu-name'>".$produit->traduction_libelle."</p>";
+            if ($produit->traduction_description) {
+                echo "<p class='menu-detail'>".$produit->traduction_description."</p>";
+            }
+
+            $price = $item->categorise_prix;
+            $price = (floor($price) == $price) ? (int)$price : number_format($price, 2, ",");
+            echo "</td><td class='menu-price'>$price €</td></tr>";
+        }
+        echo "</table>";
+
+        $children = Categorie::where('categorie_idparent', $id)->orderBy('categorie_ordre')->get();
+        foreach ($children as $child) {
+            VitrineController::menu($child->categorie_id, $level + 1);
+        }
     }
 }

@@ -1,5 +1,7 @@
 @extends('Private.Layouts.app')
 
 @section('content')
-<h1>DASHBOARD</h1>
+<div class="flex justify-center items-center">
+    <h1 class="text-4xl">Bienvenue</h1>
+</div>
 @endsection

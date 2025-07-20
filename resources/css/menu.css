@@ -1,0 +1,102 @@
+main {
+    margin: 1vw 2.5vw;
+    text-align: center;
+}
+
+main #menu-nav {
+    display: block;
+    align-self: center;
+}
+
+main #menu-nav a {
+    margin: 10px auto;
+    padding: 2.5px;
+    background-color: #ffffff20;
+    border-radius: 5px;
+    display: block;
+    width: 75%;
+    font-size: 25px;
+}
+
+main #menu-nav a.active {
+    border: 2px solid #ffffffcc;
+}
+
+#menu-main {
+    margin: auto;
+    width: 90%
+}
+
+#menu-main table, #menu-main tr {
+    margin: auto;
+    width: 100%;
+}
+
+@media only screen and (min-width: 750px) {
+    main #menu-nav {
+        display: flex;
+        gap: 7.5vw;
+    }
+
+    main #menu-nav a {
+        font-size: calc(1.25vw + 10px);
+        display: inline;
+    }
+    
+    #menu-main {
+        width: calc(150px + 66vw);
+    }
+
+    #menu-main table, #menu-main tr {
+        width: 95%;
+    }
+}
+
+.menu-category {
+    margin: 1.5vw;
+    margin-bottom: 0.5vw;
+    font-weight: bold;
+    text-wrap: nowrap;
+}
+
+.menu-description {
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 2vw;
+}
+
+#menu-main td {
+    border-top: 1px solid #ffffff10;
+    border-bottom: 1px solid #ffffff10;
+    padding: 0.5vw 0;
+}
+
+#menu-main .menu-price {
+    width: 15%;
+    text-wrap: nowrap;
+}
+
+#menu-main .menu-item, #menu-main .menu-price {
+    vertical-align: top;
+    padding-left: 2.5vw;
+    font-size: max(20px, 1.25vw);
+    text-align: start;
+}
+
+.menu-name, .menu-price {
+    font-weight: bold;
+}
+
+.menu-detail {
+    font-size: max(15px, 1vw);
+}
+
+.menu-category-1 { font-size: max(40px, 3vw); }
+.menu-category-2 { font-size: max(30px, 2vw); }
+.menu-category-3 { font-size: max(20px, 1.5vw); }
+.menu-description-1 { 
+    font-size: max(25px, 1.5vw);
+    text-align: start;
+ }
+.menu-description-2 { font-size: max(20px, 1.25vw); }
+.menu-description-3 { font-size: max(15px, 1vw); }

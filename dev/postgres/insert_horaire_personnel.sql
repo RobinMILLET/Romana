@@ -80,23 +80,9 @@ INSERT INTO permission (personnel_id, typepermission_id) VALUES
 */ --------------------------------
 
 INSERT INTO statut (statut_id, statut_libelle, statut_hex) VALUES
-(1, 'En attente', 'cccccc'),   -- Blanc
-(2, 'En approche', 'cccc77'),  -- Jaune
-(3, 'En cours', '77cc77'),     -- Vert
-(4, 'En retard', 'cc7777'),    -- Rouge
-(5, 'Absent', 'cc77cc'),       -- Violet
-(6, 'Annulé', '777777'),       -- Noir
-(7, 'En salle', '77cccc'),     -- Cyan
-(8, 'Terminé', '7777cc');      -- Bleu
-
-INSERT INTO reservation (statut_id, personnel_id, reservation_num,
-reservation_nom, reservation_prenom, reservation_telephone, reservation_personnes,
-reservation_commentaire, reservation_creation, reservation_horaire, reservation_anonymiser) VALUES
-(1, 1, '4V4LYNRP', NULL, 'Lys', '33123456789', 4, 'Bonjour ! C''est l''anniversaire de ma tante ajourd''hui. Vous pensez pouvoir mettre une bougie sur une pizza ? Ça serait très drôle ! Merci !', now(), now() + INTERVAL '90 minute', NULL),
-(2, 4, '3ZZ4M4RI', 'EZZAMARI', 'Sofiane', '31234567890', 2, NULL, now(), now() + INTERVAL '30 minute', NULL),
-(3, NULL, '53BUL0NP', 'ZEBULON', 'Moustache', '32345678901', 10, NULL, now(), now() - INTERVAL '5 minute', NULL),
-(4, 4, '3C0N0MY1', 'YOHANN', 'Gaillard', '33456789012', 1, 'De préférence en extérieur SVP.', now(), now() - INTERVAL '15 minute', NULL),
-(5, NULL, 'J3SUSG0D', 'JESUS', 'Chuy', '34567890123', 7, NULL, now(), now() - INTERVAL '45 minute', NULL),
-(6, NULL, 'L0LXPTDR', 'MICHEL', 'Jean', '35678901234', 20, NULL, now(), now() - INTERVAL '60 minute', NULL),
-(7, 1, 'R0B1NM74', 'MILLET', 'Robin', '36789012345', 1, NULL, now(), now() - INTERVAL '30 minute', NULL),
-(8, 4, 'L0L0FL3G', 'GRAGAS', NULL, '37890123456', 5, 'Une personne dans notre groupe est en fauteuil roulant', now(), now() - INTERVAL '120 minute', NULL);
+(1, 'En attente', '77cc77'),    -- Vert
+(2, 'En cours', '77cccc'),      -- Cyan
+(3, 'Terminée', '7777cc'),      -- Bleu
+(4, 'Archivée', 'cccc77'),      -- Jaune
+(5, 'Anonymisée', 'cc77cc'),    -- Violet
+(6, 'Annulée', 'cc7777'),       -- Rouge

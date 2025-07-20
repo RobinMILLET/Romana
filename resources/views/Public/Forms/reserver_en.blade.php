@@ -16,7 +16,7 @@
 
     <label>Phone number
         <input type="tel" name="phone" required placeholder="01 23 45 67 89"
-          pattern="((\+\d{1,2}[\-_\. ]?[1-9])|(0[1-9]))([\-_\. ]?\d{2}){4}" maxlength="17">
+          pattern="((\+?\d{1,2}[\-_\. ]?[1-9])|(0[1-9]))([\-_\. ]?\d{2}){4}" maxlength="17">
     </label>
 
     <label>Number of people
@@ -40,15 +40,7 @@
         <textarea name="other" maxlength="500"></textarea>
     </label>
 
-    @if (Constante::key('captcha_réservation'))
-      <div class='g-recaptcha' data-sitekey='{{ env('RECAPTCHA_SITE_KEY')}}'
-        data-theme='dark' data-callback='callback' data-expired-callback='expire'>
-      </div>
-
-      <button type="submit" disabled onmouseenter='submit_enter(this)' onmouseleave='submit_leave()'>Send</button>
-    @else
-      <button type="submit">Confirm</button>
-    @endif
+    <button type="submit">Confirm</button>
 
     @if (session('errors'))
         @if (session('errors')->first('SlotTaken'))

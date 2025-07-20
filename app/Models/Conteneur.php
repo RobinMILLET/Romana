@@ -74,10 +74,12 @@ class Conteneur extends Model
 
     public function formulaire($langue_id){
         // Si ne ressemble pas à '<form#___>', on abandonne
-        if (!preg_match("/^<form#[a-z0-9]+>$/", $this->conteneur_texte)) return null;
+        if (!preg_match("/^<form#[a-z0-9]+_?>$/", $this->conteneur_texte)) return null;
         // On extrait le nom de la balise
         $nom = substr($this->conteneur_texte, 6, strlen($this->conteneur_texte)-7);
+        // Si le nom ne finit pas par '_', il n'attend pas de code de langue
+        if (!str_ends_with($nom, "_")) return "Public.Forms.".$nom;
         $code = Langue::find($langue_id)->langue_code; // Le code de langue
-        return "Public.Forms.".$nom."_".$code; // Et on renvoie le nom (théorique) de la vue
+        return "Public.Forms.".$nom.$code; // Et on renvoie le nom (théorique) de la vue
     }
 }
