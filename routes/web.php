@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompteController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TraductionController;
 use App\Http\Controllers\VitrineController;
 use App\Models\Categorie;
 use App\Models\Constante;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Session;
 // ------ TEST ------
 
 Route::get('/test', function(){
-    //var_dump(PlanningController::nextPlanning(new DateTime(), 0));
+    //
 })->name('test');
 
 
